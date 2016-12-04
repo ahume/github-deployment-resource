@@ -1,51 +1,51 @@
 package resource
 
 import (
-  "strconv"
-  "github.com/bradfitz/slice"
+	"github.com/bradfitz/slice"
+	"strconv"
 )
 
 type CheckCommand struct {
-  github GitHub
+	github GitHub
 }
 
 func NewCheckCommand(github GitHub) *CheckCommand {
-  return &CheckCommand{
-    github: github,
-  }
+	return &CheckCommand{
+		github: github,
+	}
 }
 
 func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
-  deployments, err := c.github.ListDeployments()
+	deployments, err := c.github.ListDeployments()
 
-  if err != nil {
-    return []Version{}, err
-  }
+	if err != nil {
+		return []Version{}, err
+	}
 
-  if len(deployments) == 0 {
-    return []Version{}, nil
-  }
+	if len(deployments) == 0 {
+		return []Version{}, nil
+	}
 
-  var latestVersions []Version
+	var latestVersions []Version
 
-  for _, deployment := range deployments {
-    id := *deployment.ID
-    if (strconv.Itoa(id) >= request.Version.ID) {
-      latestVersions = append(latestVersions, Version{ID: strconv.Itoa(id)})
-    }
-  }
+	for _, deployment := range deployments {
+		id := *deployment.ID
+		if strconv.Itoa(id) >= request.Version.ID {
+			latestVersions = append(latestVersions, Version{ID: strconv.Itoa(id)})
+		}
+	}
 
-  slice.Sort(latestVersions[:], func(i, j int) bool {
-    return latestVersions[i].ID < latestVersions[j].ID
-  })
+	slice.Sort(latestVersions[:], func(i, j int) bool {
+		return latestVersions[i].ID < latestVersions[j].ID
+	})
 
-  latestVersion := latestVersions[len(latestVersions)-1]
+	latestVersion := latestVersions[len(latestVersions)-1]
 
-  if (request.Version == Version{}) {
-    return []Version{
-      latestVersion,
-    }, nil
-  }
+	if (request.Version == Version{}) {
+		return []Version{
+			latestVersion,
+		}, nil
+	}
 
-  return latestVersions, nil
+	return latestVersions, nil
 }

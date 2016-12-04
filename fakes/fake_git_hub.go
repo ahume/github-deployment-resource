@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/ahume/github-deployment-resource"
-	"github.com/google/go-github/github"
+	"github.com/ahume/go-github/github"
 )
 
 type FakeGitHub struct {
@@ -14,6 +14,15 @@ type FakeGitHub struct {
 	listDeploymentsArgsForCall []struct{}
 	listDeploymentsReturns     struct {
 		result1 []*github.Deployment
+		result2 error
+	}
+	GetDeploymentStub        func(ID int) (*github.Deployment, error)
+	getDeploymentMutex       sync.RWMutex
+	getDeploymentArgsForCall []struct {
+		ID int
+	}
+	getDeploymentReturns struct {
+		result1 *github.Deployment
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -46,11 +55,47 @@ func (fake *FakeGitHub) ListDeploymentsReturns(result1 []*github.Deployment, res
 	}{result1, result2}
 }
 
+func (fake *FakeGitHub) GetDeployment(ID int) (*github.Deployment, error) {
+	fake.getDeploymentMutex.Lock()
+	fake.getDeploymentArgsForCall = append(fake.getDeploymentArgsForCall, struct {
+		ID int
+	}{ID})
+	fake.recordInvocation("GetDeployment", []interface{}{ID})
+	fake.getDeploymentMutex.Unlock()
+	if fake.GetDeploymentStub != nil {
+		return fake.GetDeploymentStub(ID)
+	} else {
+		return fake.getDeploymentReturns.result1, fake.getDeploymentReturns.result2
+	}
+}
+
+func (fake *FakeGitHub) GetDeploymentCallCount() int {
+	fake.getDeploymentMutex.RLock()
+	defer fake.getDeploymentMutex.RUnlock()
+	return len(fake.getDeploymentArgsForCall)
+}
+
+func (fake *FakeGitHub) GetDeploymentArgsForCall(i int) int {
+	fake.getDeploymentMutex.RLock()
+	defer fake.getDeploymentMutex.RUnlock()
+	return fake.getDeploymentArgsForCall[i].ID
+}
+
+func (fake *FakeGitHub) GetDeploymentReturns(result1 *github.Deployment, result2 error) {
+	fake.GetDeploymentStub = nil
+	fake.getDeploymentReturns = struct {
+		result1 *github.Deployment
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeGitHub) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.listDeploymentsMutex.RLock()
 	defer fake.listDeploymentsMutex.RUnlock()
+	fake.getDeploymentMutex.RLock()
+	defer fake.getDeploymentMutex.RUnlock()
 	return fake.invocations
 }
 

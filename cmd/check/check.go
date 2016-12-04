@@ -1,8 +1,8 @@
 package main
 
 import (
-  "os"
   "encoding/json"
+  "os"
 
   "github.com/ahume/github-deployment-resource"
 )

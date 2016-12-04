@@ -1,9 +1,9 @@
 package resource_test
 
 import (
+	"github.com/ahume/go-github/github"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-  "github.com/google/go-github/github"
 
 	"testing"
 )
@@ -14,7 +14,7 @@ func TestGithubDeploymentResource(t *testing.T) {
 }
 
 func newDeployment(id int) *github.Deployment {
-  return &github.Deployment{
-    ID: github.Int(id),
-  }
+	return &github.Deployment{
+		ID: github.Int(id),
+	}
 }
