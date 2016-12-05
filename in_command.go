@@ -3,10 +3,8 @@ package resource
 import (
 	"encoding/json"
 	"errors"
-	//"fmt"
 	"io"
 	"io/ioutil"
-	//"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -30,12 +28,7 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 		return InResponse{}, err
 	}
 
-	id, err := strconv.Atoi(request.Version.ID)
-
-	if err != nil {
-		Fatal("Bad Version ID string", err)
-	}
-
+	id, _ := strconv.Atoi(request.Version.ID)
 	deployment, err := c.github.GetDeployment(id)
 	if err != nil {
 		return InResponse{}, err

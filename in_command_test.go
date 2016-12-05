@@ -1,0 +1,130 @@
+package resource_test
+
+import (
+  "errors"
+  "io/ioutil"
+  "os"
+  "path"
+  "path/filepath"
+
+  . "github.com/onsi/ginkgo"
+  . "github.com/onsi/gomega"
+
+  "github.com/ahume/go-github/github"
+
+  "github.com/ahume/github-deployment-resource"
+  "github.com/ahume/github-deployment-resource/fakes"
+)
+
+var _ = Describe("In Command", func() {
+  var (
+    command      *resource.InCommand
+    githubClient *fakes.FakeGitHub
+
+    inRequest resource.InRequest
+
+    inResponse resource.InResponse
+    inErr      error
+
+    tmpDir  string
+    destDir string
+  )
+
+  BeforeEach(func() {
+    var err error
+
+    githubClient = &fakes.FakeGitHub{}
+    command = resource.NewInCommand(githubClient, ioutil.Discard)
+
+    tmpDir, err = ioutil.TempDir("", "github-deployment")
+    Ω(err).ShouldNot(HaveOccurred())
+
+    destDir = filepath.Join(tmpDir, "destination")
+
+    inRequest = resource.InRequest{}
+  })
+
+  AfterEach(func() {
+    Ω(os.RemoveAll(tmpDir)).Should(Succeed())
+  })
+
+  buildDeployment := func(id int, env string, task string) *github.Deployment {
+    return &github.Deployment{
+      ID:           github.Int(id),
+      Environment:  github.String(env),
+      Task:         github.String(task),
+      Ref:          github.String("master"),
+      SHA:          github.String("12345"),
+      Description:  github.String("One more"),
+      Creator: &github.User{
+        Login: github.String("Something"),
+      },
+    }
+  }
+
+  Context("when there is a deployment found", func() {
+    disaster := errors.New("no deployment")
+
+    BeforeEach(func() {
+      githubClient.GetDeploymentReturns(&github.Deployment{}, disaster)
+
+      inRequest.Version = &resource.Version{
+        ID: "1",
+      }
+    })
+
+    It("returns an appropriate error", func() {
+      inResponse, inErr = command.Run(destDir, inRequest)
+
+      Expect(inErr).To(Equal(disaster))
+    })
+  })
+
+  Context("when there is a deployment found", func() {
+    BeforeEach(func() {
+      githubClient.GetDeploymentReturns(buildDeployment(1, "production", "deploy"), nil)
+
+      inRequest.Version = &resource.Version{
+        ID: "1",
+      }
+    })
+
+    It("creates the correct data files", func() {
+      inResponse, inErr = command.Run(destDir, inRequest)
+
+      contents, err := ioutil.ReadFile(path.Join(destDir, "id"))
+      Ω(err).ShouldNot(HaveOccurred())
+      Ω(string(contents)).Should(Equal("1"))
+
+      contents, err = ioutil.ReadFile(path.Join(destDir, "ref"))
+      Ω(err).ShouldNot(HaveOccurred())
+      Ω(string(contents)).Should(Equal("master"))
+
+      contents, err = ioutil.ReadFile(path.Join(destDir, "sha"))
+      Ω(err).ShouldNot(HaveOccurred())
+      Ω(string(contents)).Should(Equal("12345"))
+
+      contents, err = ioutil.ReadFile(path.Join(destDir, "task"))
+      Ω(err).ShouldNot(HaveOccurred())
+      Ω(string(contents)).Should(Equal("deploy"))
+
+      contents, err = ioutil.ReadFile(path.Join(destDir, "environment"))
+      Ω(err).ShouldNot(HaveOccurred())
+      Ω(string(contents)).Should(Equal("production"))
+
+      contents, err = ioutil.ReadFile(path.Join(destDir, "description"))
+      Ω(err).ShouldNot(HaveOccurred())
+      Ω(string(contents)).Should(Equal("One more"))
+    })
+
+    It("outputs the correct metadata", func() {
+      inResponse, inErr = command.Run(destDir, inRequest)
+
+      Ω(inResponse.Metadata).Should(ConsistOf(
+        resource.MetadataPair{Name: "id", Value: "1"},
+        resource.MetadataPair{Name: "environment", Value: "production"},
+        resource.MetadataPair{Name: "creator", Value: "Something"},
+      ))
+    })
+  })
+})

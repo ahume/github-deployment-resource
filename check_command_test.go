@@ -12,8 +12,8 @@ import (
 
 var _ = Describe("Check Command", func() {
 	var (
-		githubClient *fakes.FakeGitHub
 		command      *resource.CheckCommand
+		githubClient *fakes.FakeGitHub
 
 		returnedDeployments []*github.Deployment
 	)
