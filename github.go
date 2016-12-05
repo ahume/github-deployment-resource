@@ -13,6 +13,8 @@ import (
 type GitHub interface {
 	ListDeployments() ([]*github.Deployment, error)
 	GetDeployment(ID int) (*github.Deployment, error)
+	CreateDeployment(request *github.DeploymentRequest) (*github.Deployment, error)
+	CreateDeploymentStatus(ID int, request *github.DeploymentStatusRequest) (*github.DeploymentStatus, error)
 }
 
 type GitHubClient struct {
@@ -25,14 +27,9 @@ type GitHubClient struct {
 func NewGitHubClient(source Source) (*GitHubClient, error) {
 	var client *github.Client
 
-	if source.AccessToken == "" {
-		client = github.NewClient(nil)
-	} else {
-		var err error
-		client, err = oauthClient(source)
-		if err != nil {
-			return nil, err
-		}
+	client, err := oauthClient(source)
+	if err != nil {
+		return nil, err
 	}
 
 	return &GitHubClient{
@@ -68,6 +65,34 @@ func (g *GitHubClient) GetDeployment(ID int) (*github.Deployment, error) {
 	}
 
 	return deployment, nil
+}
+
+func (g *GitHubClient) CreateDeployment(request *github.DeploymentRequest) (*github.Deployment, error) {
+	deployment, res, err := g.client.Repositories.CreateDeployment(g.user, g.repository, request)
+	if err != nil {
+		return &github.Deployment{}, err
+	}
+
+	err = res.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	return deployment, nil
+}
+
+func (g *GitHubClient) CreateDeploymentStatus(ID int, request *github.DeploymentStatusRequest) (*github.DeploymentStatus, error) {
+	status, res, err := g.client.Repositories.CreateDeploymentStatus(g.user, g.repository, ID, request)
+	if err != nil {
+		return &github.DeploymentStatus{}, err
+	}
+
+	err = res.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	return status, nil
 }
 
 func oauthClient(source Source) (*github.Client, error) {

@@ -35,3 +35,26 @@ func metadataFromDeployment(deployment *github.Deployment) []MetadataPair {
 
 	return metadata
 }
+
+func metadataFromStatus(status *github.DeploymentStatus) []MetadataPair {
+	metadata := []MetadataPair{}
+
+	if status.ID != nil {
+		id := *status.ID
+		nameMeta := MetadataPair{
+			Name:  "id",
+			Value: strconv.Itoa(id),
+		}
+		metadata = append(metadata, nameMeta)
+	}
+
+	if status.State != nil {
+		envMeta := MetadataPair{
+			Name:  "state",
+			Value: *status.State,
+		}
+		metadata = append(metadata, envMeta)
+	}
+
+	return metadata
+}
