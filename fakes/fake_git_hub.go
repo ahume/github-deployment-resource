@@ -25,6 +25,25 @@ type FakeGitHub struct {
 		result1 *github.Deployment
 		result2 error
 	}
+	CreateDeploymentStub        func(request *github.DeploymentRequest) (*github.Deployment, error)
+	createDeploymentMutex       sync.RWMutex
+	createDeploymentArgsForCall []struct {
+		request *github.DeploymentRequest
+	}
+	createDeploymentReturns struct {
+		result1 *github.Deployment
+		result2 error
+	}
+	CreateDeploymentStatusStub        func(ID int, request *github.DeploymentStatusRequest) (*github.DeploymentStatus, error)
+	createDeploymentStatusMutex       sync.RWMutex
+	createDeploymentStatusArgsForCall []struct {
+		ID      int
+		request *github.DeploymentStatusRequest
+	}
+	createDeploymentStatusReturns struct {
+		result1 *github.DeploymentStatus
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -89,6 +108,75 @@ func (fake *FakeGitHub) GetDeploymentReturns(result1 *github.Deployment, result2
 	}{result1, result2}
 }
 
+func (fake *FakeGitHub) CreateDeployment(request *github.DeploymentRequest) (*github.Deployment, error) {
+	fake.createDeploymentMutex.Lock()
+	fake.createDeploymentArgsForCall = append(fake.createDeploymentArgsForCall, struct {
+		request *github.DeploymentRequest
+	}{request})
+	fake.recordInvocation("CreateDeployment", []interface{}{request})
+	fake.createDeploymentMutex.Unlock()
+	if fake.CreateDeploymentStub != nil {
+		return fake.CreateDeploymentStub(request)
+	} else {
+		return fake.createDeploymentReturns.result1, fake.createDeploymentReturns.result2
+	}
+}
+
+func (fake *FakeGitHub) CreateDeploymentCallCount() int {
+	fake.createDeploymentMutex.RLock()
+	defer fake.createDeploymentMutex.RUnlock()
+	return len(fake.createDeploymentArgsForCall)
+}
+
+func (fake *FakeGitHub) CreateDeploymentArgsForCall(i int) *github.DeploymentRequest {
+	fake.createDeploymentMutex.RLock()
+	defer fake.createDeploymentMutex.RUnlock()
+	return fake.createDeploymentArgsForCall[i].request
+}
+
+func (fake *FakeGitHub) CreateDeploymentReturns(result1 *github.Deployment, result2 error) {
+	fake.CreateDeploymentStub = nil
+	fake.createDeploymentReturns = struct {
+		result1 *github.Deployment
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeGitHub) CreateDeploymentStatus(ID int, request *github.DeploymentStatusRequest) (*github.DeploymentStatus, error) {
+	fake.createDeploymentStatusMutex.Lock()
+	fake.createDeploymentStatusArgsForCall = append(fake.createDeploymentStatusArgsForCall, struct {
+		ID      int
+		request *github.DeploymentStatusRequest
+	}{ID, request})
+	fake.recordInvocation("CreateDeploymentStatus", []interface{}{ID, request})
+	fake.createDeploymentStatusMutex.Unlock()
+	if fake.CreateDeploymentStatusStub != nil {
+		return fake.CreateDeploymentStatusStub(ID, request)
+	} else {
+		return fake.createDeploymentStatusReturns.result1, fake.createDeploymentStatusReturns.result2
+	}
+}
+
+func (fake *FakeGitHub) CreateDeploymentStatusCallCount() int {
+	fake.createDeploymentStatusMutex.RLock()
+	defer fake.createDeploymentStatusMutex.RUnlock()
+	return len(fake.createDeploymentStatusArgsForCall)
+}
+
+func (fake *FakeGitHub) CreateDeploymentStatusArgsForCall(i int) (int, *github.DeploymentStatusRequest) {
+	fake.createDeploymentStatusMutex.RLock()
+	defer fake.createDeploymentStatusMutex.RUnlock()
+	return fake.createDeploymentStatusArgsForCall[i].ID, fake.createDeploymentStatusArgsForCall[i].request
+}
+
+func (fake *FakeGitHub) CreateDeploymentStatusReturns(result1 *github.DeploymentStatus, result2 error) {
+	fake.CreateDeploymentStatusStub = nil
+	fake.createDeploymentStatusReturns = struct {
+		result1 *github.DeploymentStatus
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeGitHub) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -96,6 +184,10 @@ func (fake *FakeGitHub) Invocations() map[string][][]interface{} {
 	defer fake.listDeploymentsMutex.RUnlock()
 	fake.getDeploymentMutex.RLock()
 	defer fake.getDeploymentMutex.RUnlock()
+	fake.createDeploymentMutex.RLock()
+	defer fake.createDeploymentMutex.RUnlock()
+	fake.createDeploymentStatusMutex.RLock()
+	defer fake.createDeploymentStatusMutex.RUnlock()
 	return fake.invocations
 }
 

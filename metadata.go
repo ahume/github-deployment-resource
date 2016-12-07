@@ -17,12 +17,44 @@ func metadataFromDeployment(deployment *github.Deployment) []MetadataPair {
 		metadata = append(metadata, nameMeta)
 	}
 
+	if deployment.Ref != nil {
+		refMeta := MetadataPair{
+			Name:  "ref",
+			Value: *deployment.Ref,
+		}
+		metadata = append(metadata, refMeta)
+	}
+
+	if deployment.SHA != nil {
+		shaMeta := MetadataPair{
+			Name:  "sha",
+			Value: *deployment.SHA,
+		}
+		metadata = append(metadata, shaMeta)
+	}
+
+	if deployment.Task != nil {
+		taskMeta := MetadataPair{
+			Name:  "task",
+			Value: *deployment.Task,
+		}
+		metadata = append(metadata, taskMeta)
+	}
+
 	if deployment.Environment != nil {
 		envMeta := MetadataPair{
 			Name:  "environment",
 			Value: *deployment.Environment,
 		}
 		metadata = append(metadata, envMeta)
+	}
+
+	if deployment.Description != nil {
+		descMeta := MetadataPair{
+			Name:  "description",
+			Value: *deployment.Description,
+		}
+		metadata = append(metadata, descMeta)
 	}
 
 	if deployment.Creator != nil {

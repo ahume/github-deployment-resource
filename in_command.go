@@ -56,22 +56,28 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 		return InResponse{}, err
 	}
 
-	taskPath := filepath.Join(destDir, "task")
-	err = ioutil.WriteFile(taskPath, []byte(*deployment.Task), 0644)
-	if err != nil {
-		return InResponse{}, err
+	if deployment.Task != nil {
+		taskPath := filepath.Join(destDir, "task")
+		err = ioutil.WriteFile(taskPath, []byte(*deployment.Task), 0644)
+		if err != nil {
+			return InResponse{}, err
+		}
 	}
 
-	envPath := filepath.Join(destDir, "environment")
-	err = ioutil.WriteFile(envPath, []byte(*deployment.Environment), 0644)
-	if err != nil {
-		return InResponse{}, err
+	if deployment.Environment != nil {
+		envPath := filepath.Join(destDir, "environment")
+		err = ioutil.WriteFile(envPath, []byte(*deployment.Environment), 0644)
+		if err != nil {
+			return InResponse{}, err
+		}
 	}
 
-	descPath := filepath.Join(destDir, "description")
-	err = ioutil.WriteFile(descPath, []byte(*deployment.Description), 0644)
-	if err != nil {
-		return InResponse{}, err
+	if deployment.Description != nil {
+		descPath := filepath.Join(destDir, "description")
+		err = ioutil.WriteFile(descPath, []byte(*deployment.Description), 0644)
+		if err != nil {
+			return InResponse{}, err
+		}
 	}
 
 	// Save the whole deployment too I guess.

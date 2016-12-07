@@ -3,6 +3,7 @@ package resource
 import (
   "io"
   "io/ioutil"
+  "errors"
   "fmt"
   "path/filepath"
   "strconv"
@@ -23,61 +24,27 @@ func NewOutCommand(github GitHub, writer io.Writer) *OutCommand {
   }
 }
 
-func (c *OutCommand) RunForDeployment(sourceDir string, request OutRequest) (OutResponse, error) {
-  ref, err := c.fileContents(filepath.Join(sourceDir, request.Params.RefPath))
-  if err != nil {
-    return OutResponse{}, err
+func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, error) {
+  if request.Params.IDPath == "" {
+    return OutResponse{}, errors.New("id is a required parameter")
   }
 
-  task, err := c.fileContents(filepath.Join(sourceDir, request.Params.TaskPath))
-  if err != nil {
-    return OutResponse{}, err
-  }
-
-  payload, err := c.fileContents(filepath.Join(sourceDir, request.Params.PayloadPath))
-  if err != nil {
-    return OutResponse{}, err
-  }
-
-  env, err := c.fileContents(filepath.Join(sourceDir, request.Params.EnvironmentPath))
-  if err != nil {
-    return OutResponse{}, err
-  }
-
-  description, err := c.fileContents(filepath.Join(sourceDir, request.Params.DescriptionPath))
-  if err != nil {
-    return OutResponse{}, err
-  }
-
-  newDeployment := &github.DeploymentRequest{
-    Ref:          github.String(ref),
-    Task:         github.String(task),
-    Payload:      github.String(payload),
-    Environment:  github.String(env),
-    Description:  github.String(description),
-  }
-
-  fmt.Fprintf(c.writer, "creating Deployment")
-  deployment, err := c.github.CreateDeployment(newDeployment)
-  if err != nil {
-    return OutResponse{}, err
-  }
-
-  return OutResponse{
-    Version:  Version{ID: strconv.Itoa(*deployment.ID)},
-    Metadata: metadataFromDeployment(deployment),
-  }, nil
-}
-
-func (c *OutCommand) RunForStatus(sourceDir string, request OutRequest) (OutResponse, error) {
   id, err := c.fileContents(filepath.Join(sourceDir, request.Params.IDPath))
   if err != nil {
     return OutResponse{}, err
   }
 
-  state, err := c.fileContents(filepath.Join(sourceDir, request.Params.StatePath))
-  if err != nil {
-    return OutResponse{}, err
+  state := request.Params.State
+  if request.Params.StatePath != "" {
+    var err error
+    state, err = c.fileContents(filepath.Join(sourceDir, request.Params.StatePath))
+    if err != nil {
+      return OutResponse{}, err
+    }
+  }
+
+  if state == "" {
+    return OutResponse{}, errors.New("state or state_path is a required parameter")
   }
 
   newStatus := &github.DeploymentStatusRequest{

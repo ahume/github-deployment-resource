@@ -3,12 +3,14 @@ package resource
 import (
 	"fmt"
 	"os"
+  "runtime/debug"
 
 	"github.com/mitchellh/colorstring"
 )
 
 func Fatal(doing string, err error) {
 	Sayf(colorstring.Color("[red]error %s: %s\n"), doing, err)
+  debug.PrintStack()
 	os.Exit(1)
 }
 

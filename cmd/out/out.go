@@ -2,9 +2,7 @@ package main
 
 import (
   "encoding/json"
-  "errors"
   "os"
-  "fmt"
 
   "github.com/ahume/github-deployment-resource"
 )
@@ -25,24 +23,20 @@ func main() {
     resource.Fatal("constructing github client", err)
   }
 
-  fmt.Println(request.Params)
-
-  command := resource.NewOutCommand(github, os.Stderr)
-
   if request.Params.Type == "deployment" {
-    response, err := command.RunForDeployment(sourceDir, request)
-    if err != nil {
-      resource.Fatal("running command", err)
-    }
-    outputResponse(response)
-  } else if request.Params.Type == "status" {
-    response, err := command.RunForStatus(sourceDir, request)
+    command := resource.NewDeploymentOutCommand(github, os.Stderr)
+    response, err := command.Run(sourceDir, request)
     if err != nil {
       resource.Fatal("running command", err)
     }
     outputResponse(response)
   } else {
-    resource.Fatal("Bad params", errors.New("params.type must be one of `deployment` or `status`"))
+    command := resource.NewOutCommand(github, os.Stderr)
+    response, err := command.Run(sourceDir, request)
+    if err != nil {
+      resource.Fatal("running command", err)
+    }
+    outputResponse(response)
   }
 }
 

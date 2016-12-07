@@ -36,21 +36,20 @@ see the [API documentation](https://developer.github.com/v3/repos/deployments/).
 ``` yaml
 - put: gh-deployment
   params:
-    type: status
     id: path/to/id/file
-    state: path/to/state/file
+    state: success
 ```
 
 ## Behavior
 
 ### `check`: Check for Deployments
 
-Deployments are listed in reverse chronological order. If none have previously been seen, then
-`/check` returns only the most recent Deployment.
+`/check` always returns the single latest deployment. It assumes that any preceding deployments
+are invalidated by the existence of a later deployment.
 
 ### `in`: Fetch Deployment
 
-Fetches the given Deployment and creates the following files:
+Fetches the latest deployment and creates the following files:
 
 * `id` containing the `id` of the deployment being fetched.
 * `ref` containting the name of the `ref` the deployment is relating to. A branch, tag, or SHA.

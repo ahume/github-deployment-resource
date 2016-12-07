@@ -68,7 +68,7 @@ var _ = Describe("In Command", func() {
     BeforeEach(func() {
       githubClient.GetDeploymentReturns(&github.Deployment{}, disaster)
 
-      inRequest.Version = &resource.Version{
+      inRequest.Version = resource.Version{
         ID: "1",
       }
     })
@@ -84,7 +84,7 @@ var _ = Describe("In Command", func() {
     BeforeEach(func() {
       githubClient.GetDeploymentReturns(buildDeployment(1, "production", "deploy"), nil)
 
-      inRequest.Version = &resource.Version{
+      inRequest.Version = resource.Version{
         ID: "1",
       }
     })
@@ -122,6 +122,10 @@ var _ = Describe("In Command", func() {
 
       Ω(inResponse.Metadata).Should(ConsistOf(
         resource.MetadataPair{Name: "id", Value: "1"},
+        resource.MetadataPair{Name: "ref", Value: "master"},
+        resource.MetadataPair{Name: "sha", Value: "12345"},
+        resource.MetadataPair{Name: "task", Value: "deploy"},
+        resource.MetadataPair{Name: "description", Value: "One more"},
         resource.MetadataPair{Name: "environment", Value: "production"},
         resource.MetadataPair{Name: "creator", Value: "Something"},
       ))

@@ -2,7 +2,7 @@
 
 set -e -u -x
 
-mkdir -p assets
-go build -o assets/check ./cmd/check
-go build -o assets/in ./cmd/in
-go build -o assets/out ./cmd/out
+mkdir -p /opt/resource
+go build -o /opt/resource/check ./cmd/check
+go build -o /opt/resource/in ./cmd/in
+go build -o /opt/resource/out ./cmd/out

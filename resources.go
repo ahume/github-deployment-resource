@@ -17,8 +17,8 @@ type CheckRequest struct {
 }
 
 type InRequest struct {
-	Source  Source   `json:"source"`
-	Version *Version `json:"version"`
+	Source  Source  `json:"source"`
+	Version Version `json:"version"`
 }
 
 type OutRequest struct {
@@ -39,12 +39,17 @@ type OutResponse struct {
 type OutParams struct {
 	Type					  	string `json:"type"`
 	IDPath					  string `json:"id,omitempty"`
-	RefPath      		  string `json:"ref,omitempty	"`
-	EnvironmentPath   string `json:"env,omitempty"`
-	TaskPath          string `json:"task,omitempty"`
-	StatePath         string `json:"state,omitempty"`
-	DescriptionPath   string `json:"description,omitempty"`
-	PayloadPath				string `json:"payload,omitempty"`
+	Ref 							string `json:"ref,omitempty"`
+	RefPath      		  string `json:"ref_path,omitempty"`
+	Environment       string `json:"environment,omitempty"`
+	EnvironmentPath   string `json:"env_path,omitempty"`
+	Task              string `json:"task,omitempty"`
+	TaskPath          string `json:"task_path,omitempty"`
+	State             string `json:"state,omitempty"`
+	StatePath         string `json:"state_path,omitempty"`
+	Description   		string `json:"description,omitempty"`
+	DescriptionPath   string `json:"description_path,omitempty"`
+	PayloadPath				string `json:"payload_path,omitempty"`
 }
 
 type MetadataPair struct {
@@ -53,8 +58,7 @@ type MetadataPair struct {
 }
 
 func NewCheckRequest() CheckRequest {
-	res := CheckRequest{}
-	return res
+	return CheckRequest{}
 }
 
 func NewInRequest() InRequest {
@@ -62,5 +66,9 @@ func NewInRequest() InRequest {
 }
 
 func NewOutRequest() OutRequest {
-	return OutRequest{}
+	return OutRequest{
+		Params: OutParams{
+			Type: "status",
+		},
+	}
 }
