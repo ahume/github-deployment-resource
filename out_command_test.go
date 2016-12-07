@@ -4,6 +4,7 @@ import (
   "io/ioutil"
   "os"
   "path/filepath"
+  "time"
 
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
@@ -60,6 +61,7 @@ var _ = Describe("Status Out Command", func() {
       githubClient.CreateDeploymentStatusReturns(&github.DeploymentStatus{
         ID: github.Int(12),
         State: github.String("success"),
+        CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 15, 15, 15, 0, time.UTC)},
       }, nil)
     })
 
@@ -81,6 +83,7 @@ var _ = Describe("Status Out Command", func() {
       Ω(outResponse.Metadata).Should(ConsistOf(
         resource.MetadataPair{Name: "id", Value: "12"},
         resource.MetadataPair{Name: "state", Value: "success"},
+        resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
       ))
     })
 

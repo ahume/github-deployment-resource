@@ -6,6 +6,7 @@ import (
   "os"
   "path"
   "path/filepath"
+  "time"
 
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
@@ -59,6 +60,7 @@ var _ = Describe("In Command", func() {
       Creator: &github.User{
         Login: github.String("Something"),
       },
+      CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 15, 15, 15, 0, time.UTC)},
     }
   }
 
@@ -128,6 +130,7 @@ var _ = Describe("In Command", func() {
         resource.MetadataPair{Name: "description", Value: "One more"},
         resource.MetadataPair{Name: "environment", Value: "production"},
         resource.MetadataPair{Name: "creator", Value: "Something"},
+        resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
       ))
     })
   })

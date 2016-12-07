@@ -65,6 +65,14 @@ func metadataFromDeployment(deployment *github.Deployment) []MetadataPair {
 		metadata = append(metadata, creatorMeta)
 	}
 
+	if deployment.CreatedAt != nil {
+		createdtAtMeta := MetadataPair{
+			Name:  "created_at",
+			Value: deployment.CreatedAt.Format("2006-01-02 15:04:05"),
+		}
+		metadata = append(metadata, createdtAtMeta)
+	}
+
 	return metadata
 }
 
@@ -86,6 +94,14 @@ func metadataFromStatus(status *github.DeploymentStatus) []MetadataPair {
 			Value: *status.State,
 		}
 		metadata = append(metadata, envMeta)
+	}
+
+		if status.CreatedAt != nil {
+		createdtAtMeta := MetadataPair{
+			Name:  "created_at",
+			Value: status.CreatedAt.Format("2006-01-02 15:04:05"),
+		}
+		metadata = append(metadata, createdtAtMeta)
 	}
 
 	return metadata

@@ -4,6 +4,7 @@ import (
   "io/ioutil"
   "os"
   "path/filepath"
+  "time"
 
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
@@ -60,6 +61,7 @@ var _ = Describe("Deployment Out Command", func() {
         Creator: &github.User{
           Login: github.String("theboss"),
         },
+        CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 15, 15, 15, 0, time.UTC)},
       }, nil)
     })
 
@@ -88,6 +90,7 @@ var _ = Describe("Deployment Out Command", func() {
         resource.MetadataPair{Name: "environment", Value: "envparam"},
         resource.MetadataPair{Name: "description", Value: "descparam"},
         resource.MetadataPair{Name: "creator", Value: "theboss"},
+        resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
       ))
     })
 
@@ -135,6 +138,7 @@ var _ = Describe("Deployment Out Command", func() {
           Creator: &github.User{
             Login: github.String("theboss"),
           },
+          CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 15, 15, 15, 0, time.UTC)},
         }, nil)
       })
 
@@ -163,6 +167,7 @@ var _ = Describe("Deployment Out Command", func() {
           resource.MetadataPair{Name: "task", Value: "task-from-file"},
           resource.MetadataPair{Name: "environment", Value: "env-from-file"},
           resource.MetadataPair{Name: "creator", Value: "theboss"},
+          resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
         ))
       })
     })
