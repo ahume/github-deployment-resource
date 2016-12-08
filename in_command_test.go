@@ -49,9 +49,9 @@ var _ = Describe("In Command", func() {
 		Ω(os.RemoveAll(tmpDir)).Should(Succeed())
 	})
 
-	buildDeployment := func(id int, env string, task string) *github.Deployment {
+	buildDeployment := func(ID int, env string, task string) *github.Deployment {
 		return &github.Deployment{
-			ID:          github.Int(id),
+			ID:          github.Int(ID),
 			Environment: github.String(env),
 			Task:        github.String(task),
 			Ref:         github.String("master"),
@@ -60,6 +60,14 @@ var _ = Describe("In Command", func() {
 			Creator: &github.User{
 				Login: github.String("Something"),
 			},
+			CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 15, 15, 15, 0, time.UTC)},
+		}
+	}
+
+	buildDeploymentStatus := func(ID int, state string) *github.DeploymentStatus {
+		return &github.DeploymentStatus{
+			ID:        github.Int(ID),
+			State:     github.String(state),
 			CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 15, 15, 15, 0, time.UTC)},
 		}
 	}
@@ -85,6 +93,9 @@ var _ = Describe("In Command", func() {
 	Context("when there is a deployment found", func() {
 		BeforeEach(func() {
 			githubClient.GetDeploymentReturns(buildDeployment(1, "production", "deploy"), nil)
+			githubClient.ListDeploymentStatusesReturns([]*github.DeploymentStatus{
+				buildDeploymentStatus(1, "success"),
+			}, nil)
 
 			inRequest.Version = resource.Version{
 				ID: "1",
@@ -131,6 +142,10 @@ var _ = Describe("In Command", func() {
 				resource.MetadataPair{Name: "environment", Value: "production"},
 				resource.MetadataPair{Name: "creator", Value: "Something"},
 				resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
+				resource.MetadataPair{Name: "status_id", Value: "1"},
+				resource.MetadataPair{Name: "status", Value: "success"},
+				resource.MetadataPair{Name: "status_created_at", Value: "2016-01-20 15:15:15"},
+				resource.MetadataPair{Name: "status_count", Value: "1"},
 			))
 		})
 	})

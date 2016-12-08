@@ -58,9 +58,20 @@ var _ = Describe("Status Out Command", func() {
 		}
 	}
 
+	buildDeploymentStatus := func(ID int, state string) *github.DeploymentStatus {
+		return &github.DeploymentStatus{
+			ID:        github.Int(ID),
+			State:     github.String(state),
+			CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 20, 20, 20, 0, time.UTC)},
+		}
+	}
+
 	Context("when creating a new deployment status", func() {
 		BeforeEach(func() {
 			githubClient.GetDeploymentReturns(buildDeployment(1234, "production", "deploy"), nil)
+			githubClient.ListDeploymentStatusesReturns([]*github.DeploymentStatus{
+				buildDeploymentStatus(12, "success"),
+			}, nil)
 
 			githubClient.CreateDeploymentStatusReturns(&github.DeploymentStatus{
 				ID:        github.Int(12),
@@ -101,10 +112,11 @@ var _ = Describe("Status Out Command", func() {
 					resource.MetadataPair{Name: "environment", Value: "production"},
 					resource.MetadataPair{Name: "description", Value: "One more"},
 					resource.MetadataPair{Name: "creator", Value: "Something"},
-					resource.MetadataPair{Name: "latest_state", Value: "success"},
+					resource.MetadataPair{Name: "status", Value: "success"},
 					resource.MetadataPair{Name: "status_id", Value: "12"},
 					resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
-					resource.MetadataPair{Name: "updated_at", Value: "2016-01-20 20:20:20"},
+					resource.MetadataPair{Name: "status_created_at", Value: "2016-01-20 20:20:20"},
+					resource.MetadataPair{Name: "status_count", Value: "1"},
 				))
 			})
 
@@ -114,7 +126,8 @@ var _ = Describe("Status Out Command", func() {
 
 				Ω(outResponse.Version).Should(Equal(
 					resource.Version{
-						ID: "1234",
+						ID:       "1234",
+						Statuses: "success",
 					},
 				))
 			})
@@ -163,10 +176,11 @@ var _ = Describe("Status Out Command", func() {
 					resource.MetadataPair{Name: "environment", Value: "production"},
 					resource.MetadataPair{Name: "description", Value: "One more"},
 					resource.MetadataPair{Name: "creator", Value: "Something"},
-					resource.MetadataPair{Name: "latest_state", Value: "success"},
+					resource.MetadataPair{Name: "status", Value: "success"},
 					resource.MetadataPair{Name: "status_id", Value: "12"},
 					resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
-					resource.MetadataPair{Name: "updated_at", Value: "2016-01-20 20:20:20"},
+					resource.MetadataPair{Name: "status_created_at", Value: "2016-01-20 20:20:20"},
+					resource.MetadataPair{Name: "status_count", Value: "1"},
 				))
 			})
 		})

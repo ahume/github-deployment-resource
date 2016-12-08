@@ -49,28 +49,56 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 		}
 	}
 
+	description, ok := request.Params.Description.(string)
+	if ok != true {
+		v, ok := request.Params.Description.(map[string]interface{})
+		if ok == true {
+			var err error
+			description, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
+			if err != nil {
+				return OutResponse{}, err
+			}
+		}
+	}
+
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		return OutResponse{}, err
 	}
+	fmt.Fprintln(c.writer, "getting deployment")
 	deployment, err := c.github.GetDeployment(idInt)
 	if err != nil {
 		return OutResponse{}, err
 	}
 
 	newStatus := &github.DeploymentStatusRequest{
-		State: github.String(state),
+		State:       github.String(state),
+		Description: github.String(description),
 	}
 
-	fmt.Fprintf(c.writer, "creating DeploymentStatus")
-	status, err := c.github.CreateDeploymentStatus(*deployment.ID, newStatus)
+	fmt.Fprintln(c.writer, "creating deployment status")
+	_, err = c.github.CreateDeploymentStatus(*deployment.ID, newStatus)
 	if err != nil {
 		return OutResponse{}, err
 	}
 
+	fmt.Fprintln(c.writer, "getting deployment statuses list")
+	statuses, err := c.github.ListDeploymentStatuses(*deployment.ID)
+	if err != nil {
+		return OutResponse{}, err
+	}
+
+	latestStatus := ""
+	if len(statuses) > 0 {
+		latestStatus = *statuses[0].State
+	}
+
 	return OutResponse{
-		Version:  Version{ID: strconv.Itoa(*deployment.ID)},
-		Metadata: metadataFromDeployment(deployment, status),
+		Version: Version{
+			ID:       strconv.Itoa(*deployment.ID),
+			Statuses: latestStatus,
+		},
+		Metadata: metadataFromDeployment(deployment, statuses),
 	}, nil
 }
 

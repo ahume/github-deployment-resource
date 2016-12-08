@@ -16,7 +16,7 @@ func main() {
     resource.Fatal("constructing github client", err)
   }
 
-  command := resource.NewCheckCommand(github)
+  command := resource.NewCheckCommand(github, os.Stderr)
   response, err := command.Run(request)
   if err != nil {
     resource.Fatal("running command", err)

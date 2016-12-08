@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func metadataFromDeployment(deployment *github.Deployment, status *github.DeploymentStatus) []MetadataPair {
+func metadataFromDeployment(deployment *github.Deployment, statuses []*github.DeploymentStatus) []MetadataPair {
 	metadata := []MetadataPair{}
 
 	if deployment.ID != nil {
@@ -73,30 +73,37 @@ func metadataFromDeployment(deployment *github.Deployment, status *github.Deploy
 		metadata = append(metadata, createdtAtMeta)
 	}
 
-	if status.ID != nil {
-		id := *status.ID
-		nameMeta := MetadataPair{
-			Name:  "status_id",
-			Value: strconv.Itoa(id),
+	if len(statuses) > 0 {
+		if statuses[0].ID != nil {
+			id := *statuses[0].ID
+			nameMeta := MetadataPair{
+				Name:  "status_id",
+				Value: strconv.Itoa(id),
+			}
+			metadata = append(metadata, nameMeta)
 		}
-		metadata = append(metadata, nameMeta)
+
+		if statuses[0].State != nil {
+			envMeta := MetadataPair{
+				Name:  "status",
+				Value: *statuses[0].State,
+			}
+			metadata = append(metadata, envMeta)
+		}
+
+		if statuses[0].CreatedAt != nil {
+			createdtAtMeta := MetadataPair{
+				Name:  "status_created_at",
+				Value: statuses[0].CreatedAt.Format("2006-01-02 15:04:05"),
+			}
+			metadata = append(metadata, createdtAtMeta)
+		}
 	}
 
-	if status.State != nil {
-		envMeta := MetadataPair{
-			Name:  "latest_state",
-			Value: *status.State,
-		}
-		metadata = append(metadata, envMeta)
-	}
-
-	if status.CreatedAt != nil {
-		createdtAtMeta := MetadataPair{
-			Name:  "updated_at",
-			Value: status.CreatedAt.Format("2006-01-02 15:04:05"),
-		}
-		metadata = append(metadata, createdtAtMeta)
-	}
+	metadata = append(metadata, MetadataPair{
+		Name:  "status_count",
+		Value: strconv.Itoa(len(statuses)),
+	})
 
 	return metadata
 }

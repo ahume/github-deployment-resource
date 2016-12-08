@@ -1,6 +1,8 @@
 package resource_test
 
 import (
+	"io/ioutil"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -15,18 +17,21 @@ var _ = Describe("Check Command", func() {
 		command      *resource.CheckCommand
 		githubClient *fakes.FakeGitHub
 
-		returnedDeployments []*github.Deployment
+		returnedDeployments        []*github.Deployment
+		returnedDeploymentStatuses []*github.DeploymentStatus
 	)
 
 	BeforeEach(func() {
 		githubClient = &fakes.FakeGitHub{}
-		command = resource.NewCheckCommand(githubClient)
+		command = resource.NewCheckCommand(githubClient, ioutil.Discard)
 
 		returnedDeployments = []*github.Deployment{}
+		returnedDeploymentStatuses = []*github.DeploymentStatus{}
 	})
 
 	JustBeforeEach(func() {
 		githubClient.ListDeploymentsReturns(returnedDeployments, nil)
+		githubClient.ListDeploymentStatusesReturns(returnedDeploymentStatuses, nil)
 	})
 
 	Context("when this is the first time that the resource has been run", func() {
@@ -90,7 +95,7 @@ var _ = Describe("Check Command", func() {
 			})
 
 			It("outputs the most recent version if it matches the current version", func() {
-				command := resource.NewCheckCommand(githubClient)
+				command := resource.NewCheckCommand(githubClient, ioutil.Discard)
 
 				versions, err := command.Run(resource.CheckRequest{
 					Version: resource.Version{
@@ -105,7 +110,7 @@ var _ = Describe("Check Command", func() {
 			})
 
 			It("outputs versions later than and including the current", func() {
-				command := resource.NewCheckCommand(githubClient)
+				command := resource.NewCheckCommand(githubClient, ioutil.Discard)
 
 				versions, err := command.Run(resource.CheckRequest{
 					Version: resource.Version{

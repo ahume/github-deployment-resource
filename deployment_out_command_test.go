@@ -92,6 +92,7 @@ var _ = Describe("Deployment Out Command", func() {
 						resource.MetadataPair{Name: "description", Value: "desc"},
 						resource.MetadataPair{Name: "creator", Value: "theboss"},
 						resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
+						resource.MetadataPair{Name: "status_count", Value: "0"},
 					))
 				})
 
@@ -136,6 +137,7 @@ var _ = Describe("Deployment Out Command", func() {
 						resource.MetadataPair{Name: "sha", Value: "1234"},
 						resource.MetadataPair{Name: "creator", Value: "theboss"},
 						resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
+						resource.MetadataPair{Name: "status_count", Value: "0"},
 					))
 				})
 			})
@@ -219,6 +221,7 @@ var _ = Describe("Deployment Out Command", func() {
 						resource.MetadataPair{Name: "description", Value: "description-from-file"},
 						resource.MetadataPair{Name: "creator", Value: "theboss"},
 						resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
+						resource.MetadataPair{Name: "status_count", Value: "0"},
 					))
 				})
 			})
@@ -253,6 +256,7 @@ var _ = Describe("Deployment Out Command", func() {
 						resource.MetadataPair{Name: "sha", Value: "1234"},
 						resource.MetadataPair{Name: "creator", Value: "theboss"},
 						resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
+						resource.MetadataPair{Name: "status_count", Value: "0"},
 					))
 				})
 			})

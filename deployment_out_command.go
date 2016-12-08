@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -83,7 +84,8 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 	}
 
 	newDeployment := &github.DeploymentRequest{
-		Ref: github.String(ref),
+		Ref:              github.String(ref),
+		RequiredContexts: &[]string{},
 	}
 
 	if len(task) > 0 {
@@ -99,6 +101,7 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 		newDeployment.Description = github.String(description)
 	}
 
+	fmt.Fprintln(c.writer, "creating deployment")
 	deployment, err := c.github.CreateDeployment(newDeployment)
 	if err != nil {
 		return OutResponse{}, err
@@ -106,7 +109,7 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 
 	return OutResponse{
 		Version:  Version{ID: strconv.Itoa(*deployment.ID)},
-		Metadata: metadataFromDeployment(deployment, &github.DeploymentStatus{}),
+		Metadata: metadataFromDeployment(deployment, []*github.DeploymentStatus{}),
 	}, nil
 }
 

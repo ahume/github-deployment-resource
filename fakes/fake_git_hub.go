@@ -16,6 +16,15 @@ type FakeGitHub struct {
 		result1 []*github.Deployment
 		result2 error
 	}
+	ListDeploymentStatusesStub        func(ID int) ([]*github.DeploymentStatus, error)
+	listDeploymentStatusesMutex       sync.RWMutex
+	listDeploymentStatusesArgsForCall []struct {
+		ID int
+	}
+	listDeploymentStatusesReturns struct {
+		result1 []*github.DeploymentStatus
+		result2 error
+	}
 	GetDeploymentStub        func(ID int) (*github.Deployment, error)
 	getDeploymentMutex       sync.RWMutex
 	getDeploymentArgsForCall []struct {
@@ -70,6 +79,40 @@ func (fake *FakeGitHub) ListDeploymentsReturns(result1 []*github.Deployment, res
 	fake.ListDeploymentsStub = nil
 	fake.listDeploymentsReturns = struct {
 		result1 []*github.Deployment
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeGitHub) ListDeploymentStatuses(ID int) ([]*github.DeploymentStatus, error) {
+	fake.listDeploymentStatusesMutex.Lock()
+	fake.listDeploymentStatusesArgsForCall = append(fake.listDeploymentStatusesArgsForCall, struct {
+		ID int
+	}{ID})
+	fake.recordInvocation("ListDeploymentStatuses", []interface{}{ID})
+	fake.listDeploymentStatusesMutex.Unlock()
+	if fake.ListDeploymentStatusesStub != nil {
+		return fake.ListDeploymentStatusesStub(ID)
+	} else {
+		return fake.listDeploymentStatusesReturns.result1, fake.listDeploymentStatusesReturns.result2
+	}
+}
+
+func (fake *FakeGitHub) ListDeploymentStatusesCallCount() int {
+	fake.listDeploymentStatusesMutex.RLock()
+	defer fake.listDeploymentStatusesMutex.RUnlock()
+	return len(fake.listDeploymentStatusesArgsForCall)
+}
+
+func (fake *FakeGitHub) ListDeploymentStatusesArgsForCall(i int) int {
+	fake.listDeploymentStatusesMutex.RLock()
+	defer fake.listDeploymentStatusesMutex.RUnlock()
+	return fake.listDeploymentStatusesArgsForCall[i].ID
+}
+
+func (fake *FakeGitHub) ListDeploymentStatusesReturns(result1 []*github.DeploymentStatus, result2 error) {
+	fake.ListDeploymentStatusesStub = nil
+	fake.listDeploymentStatusesReturns = struct {
+		result1 []*github.DeploymentStatus
 		result2 error
 	}{result1, result2}
 }
@@ -182,6 +225,8 @@ func (fake *FakeGitHub) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.listDeploymentsMutex.RLock()
 	defer fake.listDeploymentsMutex.RUnlock()
+	fake.listDeploymentStatusesMutex.RLock()
+	defer fake.listDeploymentStatusesMutex.RUnlock()
 	fake.getDeploymentMutex.RLock()
 	defer fake.getDeploymentMutex.RUnlock()
 	fake.createDeploymentMutex.RLock()

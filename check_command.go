@@ -1,21 +1,26 @@
 package resource
 
 import (
+	"fmt"
 	"github.com/bradfitz/slice"
+	"io"
 	"strconv"
 )
 
 type CheckCommand struct {
 	github GitHub
+	writer io.Writer
 }
 
-func NewCheckCommand(github GitHub) *CheckCommand {
+func NewCheckCommand(github GitHub, writer io.Writer) *CheckCommand {
 	return &CheckCommand{
 		github: github,
+		writer: writer,
 	}
 }
 
 func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
+	fmt.Fprintln(c.writer, "getting deployments list")
 	deployments, err := c.github.ListDeployments()
 
 	if err != nil {
@@ -41,7 +46,7 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 
 	latestVersion := latestVersions[len(latestVersions)-1]
 
-	if (request.Version == Version{}) {
+	if request.Version.ID == "" {
 		return []Version{
 			latestVersion,
 		}, nil

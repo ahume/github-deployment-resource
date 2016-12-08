@@ -12,6 +12,7 @@ import (
 
 type GitHub interface {
 	ListDeployments() ([]*github.Deployment, error)
+	ListDeploymentStatuses(ID int) ([]*github.DeploymentStatus, error)
 	GetDeployment(ID int) (*github.Deployment, error)
 	CreateDeployment(request *github.DeploymentRequest) (*github.Deployment, error)
 	CreateDeploymentStatus(ID int, request *github.DeploymentStatusRequest) (*github.DeploymentStatus, error)
@@ -79,6 +80,20 @@ func (g *GitHubClient) CreateDeployment(request *github.DeploymentRequest) (*git
 	}
 
 	return deployment, nil
+}
+
+func (g *GitHubClient) ListDeploymentStatuses(ID int) ([]*github.DeploymentStatus, error) {
+	statuses, res, err := g.client.Repositories.ListDeploymentStatuses(g.user, g.repository, ID, nil)
+	if err != nil {
+		return []*github.DeploymentStatus{}, err
+	}
+
+	err = res.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	return statuses, nil
 }
 
 func (g *GitHubClient) CreateDeploymentStatus(ID int, request *github.DeploymentStatusRequest) (*github.DeploymentStatus, error) {

@@ -44,8 +44,8 @@ see the [API documentation](https://developer.github.com/v3/repos/deployments/).
 
 ### `check`: Check for Deployments
 
-`/check` always returns the single latest deployment. It assumes that any preceding deployments
-are invalidated by the existence of a later deployment.
+`/check` always returns the single latest deployment with NO related statuses. It assumes that any
+preceding deployments are invalidated by the existence of a later deployment.
 
 ### `in`: Fetch Deployment
 

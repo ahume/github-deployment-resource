@@ -3,13 +3,12 @@ package resource
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
-
-	"github.com/ahume/go-github/github"
 )
 
 type InCommand struct {
@@ -31,6 +30,7 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 	}
 
 	id, _ := strconv.Atoi(request.Version.ID)
+	fmt.Fprintln(c.writer, "getting deployment")
 	deployment, err := c.github.GetDeployment(id)
 	if err != nil {
 		return InResponse{}, err
@@ -90,8 +90,22 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 		return InResponse{}, err
 	}
 
+	fmt.Fprintln(c.writer, "getting deployment statuses list")
+	statuses, err := c.github.ListDeploymentStatuses(*deployment.ID)
+	if err != nil {
+		return InResponse{}, err
+	}
+
+	latestStatus := ""
+	if len(statuses) > 0 {
+		latestStatus = *statuses[0].State
+	}
+
 	return InResponse{
-		Version:  Version{ID: strconv.Itoa(*deployment.ID)},
-		Metadata: metadataFromDeployment(deployment, &github.DeploymentStatus{}),
+		Version: Version{
+			ID:       strconv.Itoa(*deployment.ID),
+			Statuses: latestStatus,
+		},
+		Metadata: metadataFromDeployment(deployment, statuses),
 	}, nil
 }
