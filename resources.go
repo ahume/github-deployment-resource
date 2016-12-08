@@ -37,19 +37,18 @@ type OutResponse struct {
 }
 
 type OutParams struct {
-	Type					  	string `json:"type"`
-	IDPath					  string `json:"id,omitempty"`
-	Ref 							string `json:"ref,omitempty"`
-	RefPath      		  string `json:"ref_path,omitempty"`
-	Environment       string `json:"environment,omitempty"`
-	EnvironmentPath   string `json:"env_path,omitempty"`
-	Task              string `json:"task,omitempty"`
-	TaskPath          string `json:"task_path,omitempty"`
-	State             string `json:"state,omitempty"`
-	StatePath         string `json:"state_path,omitempty"`
-	Description   		string `json:"description,omitempty"`
-	DescriptionPath   string `json:"description_path,omitempty"`
-	PayloadPath				string `json:"payload_path,omitempty"`
+	Type        string `json:"type"`
+	ID          interface{}
+	Ref         interface{}
+	Environment interface{}
+	Task        interface{}
+	State       interface{}
+	Description interface{}
+	Payload     interface{}
+}
+
+type File struct {
+	File string `json:"file"`
 }
 
 type MetadataPair struct {

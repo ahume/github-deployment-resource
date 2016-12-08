@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"github.com/ahume/go-github/github"
 )
 
 type InCommand struct {
@@ -90,6 +92,6 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 
 	return InResponse{
 		Version:  Version{ID: strconv.Itoa(*deployment.ID)},
-		Metadata: metadataFromDeployment(deployment),
+		Metadata: metadataFromDeployment(deployment, &github.DeploymentStatus{}),
 	}, nil
 }

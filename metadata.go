@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func metadataFromDeployment(deployment *github.Deployment) []MetadataPair {
+func metadataFromDeployment(deployment *github.Deployment, status *github.DeploymentStatus) []MetadataPair {
 	metadata := []MetadataPair{}
 
 	if deployment.ID != nil {
@@ -73,16 +73,10 @@ func metadataFromDeployment(deployment *github.Deployment) []MetadataPair {
 		metadata = append(metadata, createdtAtMeta)
 	}
 
-	return metadata
-}
-
-func metadataFromStatus(status *github.DeploymentStatus) []MetadataPair {
-	metadata := []MetadataPair{}
-
 	if status.ID != nil {
 		id := *status.ID
 		nameMeta := MetadataPair{
-			Name:  "id",
+			Name:  "status_id",
 			Value: strconv.Itoa(id),
 		}
 		metadata = append(metadata, nameMeta)
@@ -90,15 +84,15 @@ func metadataFromStatus(status *github.DeploymentStatus) []MetadataPair {
 
 	if status.State != nil {
 		envMeta := MetadataPair{
-			Name:  "state",
+			Name:  "latest_state",
 			Value: *status.State,
 		}
 		metadata = append(metadata, envMeta)
 	}
 
-		if status.CreatedAt != nil {
+	if status.CreatedAt != nil {
 		createdtAtMeta := MetadataPair{
-			Name:  "created_at",
+			Name:  "updated_at",
 			Value: status.CreatedAt.Format("2006-01-02 15:04:05"),
 		}
 		metadata = append(metadata, createdtAtMeta)

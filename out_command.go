@@ -1,77 +1,84 @@
 package resource
 
 import (
-  "io"
-  "io/ioutil"
-  "errors"
-  "fmt"
-  "path/filepath"
-  "strconv"
-  "strings"
+	"errors"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"path/filepath"
+	"strconv"
+	"strings"
 
-  "github.com/ahume/go-github/github"
+	"github.com/ahume/go-github/github"
 )
 
 type OutCommand struct {
-  github GitHub
-  writer io.Writer
+	github GitHub
+	writer io.Writer
 }
 
 func NewOutCommand(github GitHub, writer io.Writer) *OutCommand {
-  return &OutCommand{
-    github: github,
-    writer: writer,
-  }
+	return &OutCommand{
+		github: github,
+		writer: writer,
+	}
 }
 
 func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, error) {
-  if request.Params.IDPath == "" {
-    return OutResponse{}, errors.New("id is a required parameter")
-  }
+	if request.Params.ID == nil {
+		return OutResponse{}, errors.New("id is a required parameter")
+	}
 
-  id, err := c.fileContents(filepath.Join(sourceDir, request.Params.IDPath))
-  if err != nil {
-    return OutResponse{}, err
-  }
+	id, ok := request.Params.ID.(string)
+	if ok != true {
+		var err error
+		v := request.Params.ID.(File)
+		id, err = c.fileContents(filepath.Join(sourceDir, v.File))
+		if err != nil {
+			return OutResponse{}, errors.New("id or id.file is a required parameter")
+		}
+	}
 
-  state := request.Params.State
-  if request.Params.StatePath != "" {
-    var err error
-    state, err = c.fileContents(filepath.Join(sourceDir, request.Params.StatePath))
-    if err != nil {
-      return OutResponse{}, err
-    }
-  }
+	state, ok := request.Params.State.(string)
+	if ok != true {
+		var err error
+		v := request.Params.State.(File)
+		state, err = c.fileContents(filepath.Join(sourceDir, v.File))
+		if err != nil {
+			return OutResponse{}, errors.New("state or state.file is a required parameter")
+		}
+	}
 
-  if state == "" {
-    return OutResponse{}, errors.New("state or state_path is a required parameter")
-  }
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		return OutResponse{}, err
+	}
+	deployment, err := c.github.GetDeployment(idInt)
+	if err != nil {
+		return OutResponse{}, err
+	}
 
-  newStatus := &github.DeploymentStatusRequest{
-    State:          github.String(state),
-  }
+	newStatus := &github.DeploymentStatusRequest{
+		State: github.String(state),
+	}
 
-  fmt.Fprintf(c.writer, "creating DeploymentStatus")
-  idString, err := strconv.Atoi(id)
-  if err != nil {
-    return OutResponse{}, err
-  }
-  status, err := c.github.CreateDeploymentStatus(idString, newStatus)
-  if err != nil {
-    return OutResponse{}, err
-  }
+	fmt.Fprintf(c.writer, "creating DeploymentStatus")
+	status, err := c.github.CreateDeploymentStatus(idInt, newStatus)
+	if err != nil {
+		return OutResponse{}, err
+	}
 
-  return OutResponse{
-    Version:  Version{ID: id},
-    Metadata: metadataFromStatus(status),
-  }, nil
+	return OutResponse{
+		Version:  Version{ID: strconv.Itoa(*deployment.ID)},
+		Metadata: metadataFromDeployment(deployment, status),
+	}, nil
 }
 
 func (c *OutCommand) fileContents(path string) (string, error) {
-  contents, err := ioutil.ReadFile(path)
-  if err != nil {
-    return "", err
-  }
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
 
-  return strings.TrimSpace(string(contents)), nil
+	return strings.TrimSpace(string(contents)), nil
 }
