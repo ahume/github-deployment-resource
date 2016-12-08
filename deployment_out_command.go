@@ -27,20 +27,19 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 	ref, ok := request.Params.Ref.(string)
 	if ok != true {
 		var err error
-		v := request.Params.Ref.(File)
-		ref, err = c.fileContents(filepath.Join(sourceDir, v.File))
+		v := request.Params.Ref.(map[string]interface{})
+		ref, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
 		if err != nil {
 			return OutResponse{}, err
 		}
 	}
 
-	// TODO: Task is not required, so does this break if it's missing.
 	task, ok := request.Params.Task.(string)
 	if ok != true {
-		v, ok := request.Params.Task.(File)
+		v, ok := request.Params.Task.(map[string]interface{})
 		if ok == true {
 			var err error
-			task, err = c.fileContents(filepath.Join(sourceDir, v.File))
+			task, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
 			if err != nil {
 				return OutResponse{}, err
 			}
@@ -49,10 +48,10 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 
 	payload, ok := request.Params.Payload.(string)
 	if ok != true {
-		v, ok := request.Params.Payload.(File)
+		v, ok := request.Params.Payload.(map[string]interface{})
 		if ok == true {
 			var err error
-			payload, err = c.fileContents(filepath.Join(sourceDir, v.File))
+			payload, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
 			if err != nil {
 				return OutResponse{}, err
 			}
@@ -61,10 +60,10 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 
 	environment, ok := request.Params.Environment.(string)
 	if ok != true {
-		v, ok := request.Params.Environment.(File)
+		v, ok := request.Params.Environment.(map[string]interface{})
 		if ok == true {
 			var err error
-			environment, err = c.fileContents(filepath.Join(sourceDir, v.File))
+			environment, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
 			if err != nil {
 				return OutResponse{}, err
 			}
@@ -73,10 +72,10 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 
 	description, ok := request.Params.Description.(string)
 	if ok != true {
-		v, ok := request.Params.Description.(File)
+		v, ok := request.Params.Description.(map[string]interface{})
 		if ok == true {
 			var err error
-			description, err = c.fileContents(filepath.Join(sourceDir, v.File))
+			description, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
 			if err != nil {
 				return OutResponse{}, err
 			}

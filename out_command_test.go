@@ -130,11 +130,11 @@ var _ = Describe("Status Out Command", func() {
 
 				request = resource.OutRequest{
 					Params: resource.OutParams{
-						ID: resource.File{
-							File: "id",
+						ID: map[string]interface{}{
+							"file": "id",
 						},
-						State: resource.File{
-							File: "state",
+						State: map[string]interface{}{
+							"file": "state",
 						},
 					},
 				}

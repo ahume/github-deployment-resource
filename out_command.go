@@ -32,18 +32,18 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 	id, ok := request.Params.ID.(string)
 	if ok != true {
 		var err error
-		v := request.Params.ID.(File)
-		id, err = c.fileContents(filepath.Join(sourceDir, v.File))
+		v := request.Params.ID.(map[string]interface{})
+		id, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
 		if err != nil {
-			return OutResponse{}, errors.New("id or id.file is a required parameter")
+			return OutResponse{}, errors.New("id or id.file is a required param")
 		}
 	}
 
 	state, ok := request.Params.State.(string)
 	if ok != true {
 		var err error
-		v := request.Params.State.(File)
-		state, err = c.fileContents(filepath.Join(sourceDir, v.File))
+		v := request.Params.State.(map[string]interface{})
+		state, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
 		if err != nil {
 			return OutResponse{}, errors.New("state or state.file is a required parameter")
 		}
@@ -63,7 +63,7 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 	}
 
 	fmt.Fprintf(c.writer, "creating DeploymentStatus")
-	status, err := c.github.CreateDeploymentStatus(idInt, newStatus)
+	status, err := c.github.CreateDeploymentStatus(*deployment.ID, newStatus)
 	if err != nil {
 		return OutResponse{}, err
 	}

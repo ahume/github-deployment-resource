@@ -37,8 +37,8 @@ type OutResponse struct {
 }
 
 type OutParams struct {
-	Type        string `json:"type"`
-	ID          interface{}
+	Type        string      `json:"type"`
+	ID          interface{} `json:"id"`
 	Ref         interface{}
 	Environment interface{}
 	Task        interface{}
@@ -49,6 +49,10 @@ type OutParams struct {
 
 type File struct {
 	File string `json:"file"`
+}
+
+type Filer struct {
+	File interface{} `json:"file"`
 }
 
 type MetadataPair struct {

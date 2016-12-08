@@ -173,20 +173,20 @@ var _ = Describe("Deployment Out Command", func() {
 
 					request = resource.OutRequest{
 						Params: resource.OutParams{
-							Ref: resource.File{
-								File: "ref",
+							Ref: map[string]interface{}{
+								"file": "ref",
 							},
-							Task: resource.File{
-								File: "task",
+							Task: map[string]interface{}{
+								"file": "task",
 							},
-							Payload: resource.File{
-								File: "payload",
+							Payload: map[string]interface{}{
+								"file": "payload",
 							},
-							Environment: resource.File{
-								File: "environment",
+							Environment: map[string]interface{}{
+								"file": "environment",
 							},
-							Description: resource.File{
-								File: "description",
+							Description: map[string]interface{}{
+								"file": "description",
 							},
 						},
 					}
@@ -236,8 +236,8 @@ var _ = Describe("Deployment Out Command", func() {
 					}, nil)
 					request = resource.OutRequest{
 						Params: resource.OutParams{
-							Ref: resource.File{
-								File: "ref",
+							Ref: map[string]interface{}{
+								"file": "ref",
 							},
 						},
 					}
