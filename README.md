@@ -16,12 +16,12 @@ see the [API documentation](https://developer.github.com/v3/repos/deployments/).
 * `github_api_url`: *Optional.* If you use a non-public GitHub deployment then
   you can set your API URL here.
 
-* `environments`: *Optional.* A list of environments to get versions for.
+* `environments`: *Optional.* A list of environments to get versions for. [Not implemented]
 
 ### Example
 
 ``` yaml
-- name: gh-deployment
+- name: deployment
   type: github-deployment
   source:
     user: BrandwatchLtd
@@ -30,13 +30,14 @@ see the [API documentation](https://developer.github.com/v3/repos/deployments/).
 ```
 
 ``` yaml
-- get: gh-deployment
+- get: deployment
 ```
 
 ``` yaml
-- put: gh-deployment
+- put: deployment
   params:
-    id: path/to/id/file
+    id:
+      file: deployment/id # path to a file containing the deployment ID
     state: success
 ```
 
@@ -44,8 +45,8 @@ see the [API documentation](https://developer.github.com/v3/repos/deployments/).
 
 ### `check`: Check for Deployments
 
-`/check` always returns the single latest deployment with NO related statuses. It assumes that any
-preceding deployments are invalidated by the existence of a later deployment.
+`/check` always returns the single latest deployment. It assumes that any preceding deployments
+are invalidated by the existence of a later deployment.
 
 ### `in`: Fetch Deployment
 
@@ -66,26 +67,41 @@ Create a new Deployment, or update a given Deployment with a new DeploymentStatu
 
 #### Parameters
 
-* `type`: *Required.* Either `deployment` or `status`.
+* `type`: *Optional.* Either `deployment` or `status`. Defaults to `status`.
 
 ##### If type=status
 
-* `id`: *Required.* A path to a file containing the ID of the deployment to update
-  with the new status.
+* `id`: *Required.* The ID of the deployment to update with the new status.
+  NB: You'll most likely want to reference a file with this ID stored in (see below).
 
-* `state`: *Required.*  A path to a file containing the state of the new deployment status.
+* `state`: *Required.*  The state of the new deployment status.
   Must be one of `pending`, `success`, `error`, `inactive`, or `failure`.
 
 ##### If type=deployment
 
-* `ref`: *Optional.* A path to a file containing the ref of the deployment. A branch name, a tag,
-  or SHA.
+* `ref`: *Optional.* The ref of the deployment. A branch name, a tag, or SHA.
 
-* `environment`: *Optional.* A path to a file containing the name of the environment that is being
-  deployed to.
+* `environment`: *Optional.* The name of the environment that is being deployed to.
 
-* `description`: *Optional.* A path to a file containing the description of the deployment.
+* `description`: *Optional.* The description of the deployment.
 
-* `payload`: *Optional.* A path to a JSON file containing any additional data about the deployment.
+* `payload`: *Optional.* Additional data about the deployment.
 
-* `task`: *Optional.* A path to a file containing the name of the task for the deployment.
+* `task`: *Optional.* The name of the task for the deployment.
+
+##### Reading values from files
+
+All of the above parameters can be used to pass the name of a file to read the applicable value
+from. For example...
+
+```yaml
+- put: deployment
+  params:
+    id:
+      file: path/to/the/id/file
+    state: success
+    description:
+      file: path/to/the/description
+```
+The above configuration, would read in the `id` and `description` values from files, but use
+the `state` value which has been passed in directly as a string.
