@@ -61,7 +61,7 @@ var _ = Describe("Deployment Out Command", func() {
 							Ref:         "ref",
 							Task:        "task",
 							Description: "desc",
-							Payload:     "{\"one\": \"two\"}",
+							Payload:     []byte("{\"one\": \"two\"}"),
 							Environment: "env",
 						},
 					}
@@ -76,6 +76,7 @@ var _ = Describe("Deployment Out Command", func() {
 					Ω(deployment.Ref).Should(Equal(github.String("ref")))
 					Ω(deployment.Task).Should(Equal(github.String("task")))
 					Ω(deployment.Description).Should(Equal(github.String("desc")))
+					Ω(deployment.Payload).Should(Equal(github.String("{\"one\": \"two\"}")))
 					Ω(deployment.Environment).Should(Equal(github.String("env")))
 				})
 
@@ -153,7 +154,7 @@ var _ = Describe("Deployment Out Command", func() {
 
 				file(refPath, "ref-from-file")
 				file(taskPath, "task-from-file")
-				file(payloadPath, "{\"nice\": \"one\"}")
+				file(payloadPath, "{\"three\": \"four\"}")
 				file(envPath, "environment-from-file")
 				file(descPath, "description-from-file")
 			})
@@ -181,9 +182,8 @@ var _ = Describe("Deployment Out Command", func() {
 							Task: map[string]interface{}{
 								"file": "task",
 							},
-							Payload: map[string]interface{}{
-								"file": "payload",
-							},
+							Payload:     []byte("{\"one\": \"two\"}"),
+							PayloadPath: "payload",
 							Environment: map[string]interface{}{
 								"file": "environment",
 							},
@@ -204,7 +204,7 @@ var _ = Describe("Deployment Out Command", func() {
 					Ω(deployment.Ref).Should(Equal(github.String("ref-from-file")))
 					Ω(deployment.Task).Should(Equal(github.String("task-from-file")))
 					Ω(deployment.Environment).Should(Equal(github.String("environment-from-file")))
-					Ω(deployment.Payload).Should(Equal(github.String("{\"nice\": \"one\"}")))
+					Ω(deployment.Payload).Should(Equal(github.String("{\"one\":\"two\",\"three\":\"four\"}")))
 					Ω(deployment.Description).Should(Equal(github.String("description-from-file")))
 				})
 

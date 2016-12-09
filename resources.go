@@ -1,5 +1,9 @@
 package resource
 
+import (
+	"encoding/json"
+)
+
 type Source struct {
 	User         string `json:"user"`
 	Repository   string `json:"repository"`
@@ -45,7 +49,8 @@ type OutParams struct {
 	Task        interface{}
 	State       interface{}
 	Description interface{}
-	Payload     interface{}
+	Payload     json.RawMessage
+	PayloadPath string `json:"payload_path"`
 }
 
 type File struct {

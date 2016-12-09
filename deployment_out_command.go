@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/ahume/go-github/github"
+	"github.com/peterbourgon/mergemap"
 )
 
 type DeploymentOutCommand struct {
@@ -47,16 +49,20 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 		}
 	}
 
-	payload, ok := request.Params.Payload.(string)
-	if ok != true {
-		v, ok := request.Params.Payload.(map[string]interface{})
-		if ok == true {
-			var err error
-			payload, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
-			if err != nil {
-				return OutResponse{}, err
-			}
+	payload := request.Params.Payload
+	if request.Params.PayloadPath != "" {
+		stringFromFile, err := c.fileContents(filepath.Join(sourceDir, request.Params.PayloadPath))
+		if err != nil {
+			return OutResponse{}, err
 		}
+
+		var payloadFromString map[string]interface{}
+		var payloadFromFile map[string]interface{}
+		json.Unmarshal([]byte(stringFromFile), &payloadFromFile)
+		json.Unmarshal(payload, &payloadFromString)
+
+		merged := mergemap.Merge(payloadFromFile, payloadFromString)
+		payload, _ = json.Marshal(merged)
 	}
 
 	environment, ok := request.Params.Environment.(string)
@@ -92,7 +98,7 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 		newDeployment.Task = github.String(task)
 	}
 	if len(payload) > 0 {
-		newDeployment.Payload = github.String(payload)
+		newDeployment.Payload = github.String(string(payload[:]))
 	}
 	if len(environment) > 0 {
 		newDeployment.Environment = github.String(environment)

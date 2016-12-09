@@ -87,6 +87,11 @@ Create a new Deployment, or update a given Deployment with a new DeploymentStatu
 
 * `payload`: *Optional.* Additional data about the deployment.
 
+* `payload_path`: *Optional.* Path to a file containing additional JSON data to add to the payload.
+
+NB: If there are duplicate keys in data from `payload` and `payload_path`, then the data from
+`payload_path` takes precedence.
+
 * `task`: *Optional.* The name of the task for the deployment.
 
 ##### Reading values from files
