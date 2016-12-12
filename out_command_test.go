@@ -2,8 +2,6 @@ package resource_test
 
 import (
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -15,32 +13,18 @@ import (
 	"github.com/ahume/github-deployment-resource/fakes"
 )
 
-func file(path, contents string) {
-	Ω(ioutil.WriteFile(path, []byte(contents), 0644)).Should(Succeed())
-}
-
 var _ = Describe("Status Out Command", func() {
 	var (
 		command      *resource.OutCommand
 		githubClient *fakes.FakeGitHub
 
 		sourcesDir string
-
 		request resource.OutRequest
 	)
 
 	BeforeEach(func() {
-		var err error
-
 		githubClient = &fakes.FakeGitHub{}
 		command = resource.NewOutCommand(githubClient, ioutil.Discard)
-
-		sourcesDir, err = ioutil.TempDir("", "github-deployment")
-		Ω(err).ShouldNot(HaveOccurred())
-	})
-
-	AfterEach(func() {
-		Ω(os.RemoveAll(sourcesDir)).Should(Succeed())
 	})
 
 	buildDeployment := func(id int, env string, task string) *github.Deployment {
@@ -133,56 +117,28 @@ var _ = Describe("Status Out Command", func() {
 			})
 		})
 
-		Context("with file names in params", func() {
-			BeforeEach(func() {
-				idPath := filepath.Join(sourcesDir, "id")
-				statePath := filepath.Join(sourcesDir, "state")
+		Context("when a required param is missing", func() {
+				BeforeEach(func() {
+					request = resource.OutRequest{
+						Params: resource.OutParams{},
+					}
+				})
 
-				file(idPath, "1234")
-				file(statePath, "success")
+				It("id missing returns appropriate error", func() {
+					_, err := command.Run(sourcesDir, resource.OutRequest{
+						Params: resource.OutParams{},
+					})
+					Ω(err).Should(MatchError("id is a required parameter"))
+				})
 
-				request = resource.OutRequest{
-					Params: resource.OutParams{
-						ID: map[string]interface{}{
-							"file": "id",
+				It("state missing returns appropriate error", func() {
+					_, err := command.Run(sourcesDir, resource.OutRequest{
+						Params: resource.OutParams{
+							ID: "1",
 						},
-						State: map[string]interface{}{
-							"file": "state",
-						},
-					},
-				}
+					})
+					Ω(err).Should(MatchError("state is a required parameter"))
+				})
 			})
-
-			It("creates a new status", func() {
-				_, err := command.Run(sourcesDir, request)
-				Ω(err).ShouldNot(HaveOccurred())
-
-				Ω(githubClient.CreateDeploymentStatusCallCount()).Should(Equal(1))
-				id, status := githubClient.CreateDeploymentStatusArgsForCall(0)
-
-				Ω(id).Should(Equal(*github.Int(1234)))
-				Ω(status.State).Should(Equal(github.String("success")))
-			})
-
-			It("returns some metadata", func() {
-				outResponse, err := command.Run(sourcesDir, request)
-				Ω(err).ShouldNot(HaveOccurred())
-
-				Ω(outResponse.Metadata).Should(ConsistOf(
-					resource.MetadataPair{Name: "id", Value: "1234"},
-					resource.MetadataPair{Name: "ref", Value: "master"},
-					resource.MetadataPair{Name: "sha", Value: "12345"},
-					resource.MetadataPair{Name: "task", Value: "deploy"},
-					resource.MetadataPair{Name: "environment", Value: "production"},
-					resource.MetadataPair{Name: "description", Value: "One more"},
-					resource.MetadataPair{Name: "creator", Value: "Something"},
-					resource.MetadataPair{Name: "status", Value: "success"},
-					resource.MetadataPair{Name: "status_id", Value: "12"},
-					resource.MetadataPair{Name: "created_at", Value: "2016-01-20 15:15:15"},
-					resource.MetadataPair{Name: "status_created_at", Value: "2016-01-20 20:20:20"},
-					resource.MetadataPair{Name: "status_count", Value: "1"},
-				))
-			})
-		})
 	})
 })

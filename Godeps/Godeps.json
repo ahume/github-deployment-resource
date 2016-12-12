@@ -2,10 +2,6 @@
 	"ImportPath": "github.com/ahume/github-deployment-resource",
 	"GoVersion": "go1.7",
 	"GodepVersion": "v75",
-	"Packages": [
-		"./...",
-		"github.com/onsi/ginkgo/ginkgo"
-	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/ahume/go-github/github",
@@ -14,10 +10,6 @@
 		{
 			"ImportPath": "github.com/bradfitz/slice",
 			"Rev": "d9036e2120b5ddfa53f3ebccd618c4af275f47da"
-		},
-		{
-			"ImportPath": "github.com/google/go-github/github",
-			"Rev": "4e2c2aeb92b9a57d97165d1624ff66b2aabee111"
 		},
 		{
 			"ImportPath": "github.com/google/go-querystring/query",
@@ -34,41 +26,6 @@
 		},
 		{
 			"ImportPath": "github.com/onsi/ginkgo/config",
-			"Comment": "v1.2.0-87-g00054c0",
-			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
-		},
-		{
-			"ImportPath": "github.com/onsi/ginkgo/ginkgo",
-			"Comment": "v1.2.0-87-g00054c0",
-			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
-		},
-		{
-			"ImportPath": "github.com/onsi/ginkgo/ginkgo/convert",
-			"Comment": "v1.2.0-87-g00054c0",
-			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
-		},
-		{
-			"ImportPath": "github.com/onsi/ginkgo/ginkgo/interrupthandler",
-			"Comment": "v1.2.0-87-g00054c0",
-			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
-		},
-		{
-			"ImportPath": "github.com/onsi/ginkgo/ginkgo/nodot",
-			"Comment": "v1.2.0-87-g00054c0",
-			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
-		},
-		{
-			"ImportPath": "github.com/onsi/ginkgo/ginkgo/testrunner",
-			"Comment": "v1.2.0-87-g00054c0",
-			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
-		},
-		{
-			"ImportPath": "github.com/onsi/ginkgo/ginkgo/testsuite",
-			"Comment": "v1.2.0-87-g00054c0",
-			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
-		},
-		{
-			"ImportPath": "github.com/onsi/ginkgo/ginkgo/watch",
 			"Comment": "v1.2.0-87-g00054c0",
 			"Rev": "00054c0bb96fc880d4e0be1b90937fad438c5290"
 		},
@@ -206,6 +163,10 @@
 			"ImportPath": "github.com/onsi/gomega/types",
 			"Comment": "v1.0-151-gf1f0f38",
 			"Rev": "f1f0f388b31eca4e2cbe7a6dd8a3a1dfddda5b1c"
+		},
+		{
+			"ImportPath": "github.com/peterbourgon/mergemap",
+			"Rev": "e21c03b7a721e413718d2703181ead350d3c9d6f"
 		},
 		{
 			"ImportPath": "go4.org/reflectutil",

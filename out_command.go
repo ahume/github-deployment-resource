@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -25,43 +24,14 @@ func NewOutCommand(github GitHub, writer io.Writer) *OutCommand {
 }
 
 func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, error) {
-	if request.Params.ID == nil {
+	if request.Params.ID == "" {
 		return OutResponse{}, errors.New("id is a required parameter")
 	}
-
-	id, ok := request.Params.ID.(string)
-	if ok != true {
-		var err error
-		v := request.Params.ID.(map[string]interface{})
-		id, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
-		if err != nil {
-			return OutResponse{}, errors.New("id or id.file is a required param")
-		}
+	if request.Params.State == "" {
+		return OutResponse{}, errors.New("state is a required parameter")
 	}
 
-	state, ok := request.Params.State.(string)
-	if ok != true {
-		var err error
-		v := request.Params.State.(map[string]interface{})
-		state, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
-		if err != nil {
-			return OutResponse{}, errors.New("state or state.file is a required parameter")
-		}
-	}
-
-	description, ok := request.Params.Description.(string)
-	if ok != true {
-		v, ok := request.Params.Description.(map[string]interface{})
-		if ok == true {
-			var err error
-			description, err = c.fileContents(filepath.Join(sourceDir, v["file"].(string)))
-			if err != nil {
-				return OutResponse{}, err
-			}
-		}
-	}
-
-	idInt, err := strconv.Atoi(id)
+	idInt, err := strconv.Atoi(request.Params.ID)
 	if err != nil {
 		return OutResponse{}, err
 	}
@@ -72,8 +42,8 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 	}
 
 	newStatus := &github.DeploymentStatusRequest{
-		State:       github.String(state),
-		Description: github.String(description),
+		State:       github.String(request.Params.State),
+		Description: github.String(request.Params.Description),
 	}
 
 	fmt.Fprintln(c.writer, "creating deployment status")
@@ -95,7 +65,7 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 
 	return OutResponse{
 		Version: Version{
-			ID:       strconv.Itoa(*deployment.ID),
+			ID:       request.Params.ID,
 			Statuses: latestStatus,
 		},
 		Metadata: metadataFromDeployment(deployment, statuses),

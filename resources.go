@@ -2,6 +2,12 @@ package resource
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/peterbourgon/mergemap"
 )
 
 type Source struct {
@@ -43,22 +49,68 @@ type OutResponse struct {
 
 type OutParams struct {
 	Type        string      `json:"type"`
-	ID          interface{} `json:"id"`
-	Ref         interface{}
-	Environment interface{}
-	Task        interface{}
-	State       interface{}
-	Description interface{}
-	Payload     json.RawMessage
+	ID          string
+	Ref         string
+	Environment string
+	Task        string
+	State       string
+	Description string
+	Payload     string
 	PayloadPath string `json:"payload_path"`
+
+	RawID						json.RawMessage `json:"id"`
+	RawState				json.RawMessage `json:"state"`
+	RawRef					json.RawMessage `json:"ref"`
+	RawTask					json.RawMessage `json:"task"`
+	RawEnvironment	json.RawMessage `json:"environment"`
+	RawDescription	json.RawMessage `json:"description"`
+	RawPayload			json.RawMessage `json:"payload"`
 }
 
-type File struct {
-	File string `json:"file"`
-}
+// Used to avoid recursion in UnmarshalJSON below.
+type outParams OutParams
+func (p *OutParams) UnmarshalJSON(b []byte) (err error) {
+	j := outParams{
+		Type: "status",
+	}
+	if err = json.Unmarshal(b, &j); err == nil {
+		*p = OutParams(j)
+		if p.RawID != nil {
+  		p.ID = getStringOrStringFromFile(p.RawID)
+  	}
+  	if p.RawState != nil {
+  		p.State = getStringOrStringFromFile(p.RawState)
+  	}
+		if p.RawRef != nil {
+  		p.Ref = getStringOrStringFromFile(p.RawRef)
+  	}
+  	if p.RawTask != nil {
+  		p.Task = getStringOrStringFromFile(p.RawTask)
+  	}
+  	if p.RawEnvironment != nil {
+  		p.Environment = getStringOrStringFromFile(p.RawEnvironment)
+  	}
+  	if p.RawDescription != nil {
+  		p.Description = getStringOrStringFromFile(p.RawDescription)
+  	}
 
-type Filer struct {
-	File interface{} `json:"file"`
+  	var payloadFromString map[string]interface{}
+  	json.Unmarshal(p.RawPayload, &payloadFromString)
+  	payload, _ := json.Marshal(&payloadFromString)
+
+  	if p.PayloadPath != "" {
+			stringFromFile := fileContents(p.PayloadPath)
+			var payloadFromFile map[string]interface{}
+			json.Unmarshal([]byte(stringFromFile), &payloadFromFile)
+
+			payload, _ = json.Marshal(mergemap.Merge(payloadFromFile, payloadFromString))
+		}
+
+		p.Payload = string(payload)
+
+		return
+	}
+	return
 }
 
 type MetadataPair struct {
@@ -75,9 +127,30 @@ func NewInRequest() InRequest {
 }
 
 func NewOutRequest() OutRequest {
-	return OutRequest{
-		Params: OutParams{
-			Type: "status",
-		},
+	return OutRequest{}
+}
+
+func getStringOrStringFromFile (field json.RawMessage) (string) {
+	var rawValue interface{}
+	if err := json.Unmarshal(field, &rawValue); err == nil {
+		switch rawValue := rawValue.(type) {
+		case string:
+			return rawValue
+		case map[string]interface{}:
+			return fileContents(rawValue["file"].(string))
+		default:
+			panic("Could not read string out of Params field")
+		}
 	}
+	return ""
+}
+
+func fileContents(path string) string {
+	sourceDir := os.Args[1]
+	contents, err := ioutil.ReadFile(filepath.Join(sourceDir, path))
+	if err != nil {
+		panic(err)
+	}
+
+	return strings.TrimSpace(string(contents))
 }
