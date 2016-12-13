@@ -19,7 +19,7 @@ var _ = Describe("Status Out Command", func() {
 		githubClient *fakes.FakeGitHub
 
 		sourcesDir string
-		request resource.OutRequest
+		request    resource.OutRequest
 	)
 
 	BeforeEach(func() {
@@ -118,27 +118,27 @@ var _ = Describe("Status Out Command", func() {
 		})
 
 		Context("when a required param is missing", func() {
-				BeforeEach(func() {
-					request = resource.OutRequest{
-						Params: resource.OutParams{},
-					}
-				})
-
-				It("id missing returns appropriate error", func() {
-					_, err := command.Run(sourcesDir, resource.OutRequest{
-						Params: resource.OutParams{},
-					})
-					Ω(err).Should(MatchError("id is a required parameter"))
-				})
-
-				It("state missing returns appropriate error", func() {
-					_, err := command.Run(sourcesDir, resource.OutRequest{
-						Params: resource.OutParams{
-							ID: "1",
-						},
-					})
-					Ω(err).Should(MatchError("state is a required parameter"))
-				})
+			BeforeEach(func() {
+				request = resource.OutRequest{
+					Params: resource.OutParams{},
+				}
 			})
+
+			It("id missing returns appropriate error", func() {
+				_, err := command.Run(sourcesDir, resource.OutRequest{
+					Params: resource.OutParams{},
+				})
+				Ω(err).Should(MatchError("id is a required parameter"))
+			})
+
+			It("state missing returns appropriate error", func() {
+				_, err := command.Run(sourcesDir, resource.OutRequest{
+					Params: resource.OutParams{
+						ID: "1",
+					},
+				})
+				Ω(err).Should(MatchError("state is a required parameter"))
+			})
+		})
 	})
 })

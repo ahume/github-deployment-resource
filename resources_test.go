@@ -17,7 +17,6 @@ func file(path, contents string) {
 	Ω(ioutil.WriteFile(path, []byte(contents), 0644)).Should(Succeed())
 }
 
-
 var _ = Describe("Resources", func() {
 
 	var (
@@ -39,8 +38,6 @@ var _ = Describe("Resources", func() {
 	AfterEach(func() {
 		Ω(os.RemoveAll(sourceDir)).Should(Succeed())
 	})
-
-
 
 	Context("Params is unmarshalled", func() {
 
@@ -141,7 +138,8 @@ var _ = Describe("Resources", func() {
 			err := json.NewDecoder(r).Decode(&p)
 			Ω(err).ShouldNot(HaveOccurred())
 			Ω(p.Params.Type).Should(Equal("deployment"))
-			Ω(p.Params.Payload).Should(Equal(`{"one":"two","three":"four"}`))
+			Ω(p.Params.Payload["one"]).Should(Equal("two"))
+			Ω(p.Params.Payload["three"]).Should(Equal("four"))
 		})
 
 		It("merges raw payload into file payload", func() {
@@ -158,7 +156,8 @@ var _ = Describe("Resources", func() {
 			err := json.NewDecoder(r).Decode(&p)
 			Ω(err).ShouldNot(HaveOccurred())
 			Ω(p.Params.Type).Should(Equal("deployment"))
-			Ω(p.Params.Payload).Should(Equal(`{"one":"two","three":"four"}`))
+			Ω(p.Params.Payload["one"]).Should(Equal("two"))
+			Ω(p.Params.Payload["three"]).Should(Equal("four"))
 		})
 	})
 })

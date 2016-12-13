@@ -60,7 +60,9 @@ var _ = Describe("Deployment Out Command", func() {
 							Ref:         "ref",
 							Task:        "task",
 							Description: "desc",
-							Payload:     "{\"one\": \"two\"}",
+							Payload: map[string]interface{}{
+								"one": "two",
+							},
 							Environment: "env",
 						},
 					}
@@ -75,7 +77,7 @@ var _ = Describe("Deployment Out Command", func() {
 					Ω(deployment.Ref).Should(Equal(github.String("ref")))
 					Ω(deployment.Task).Should(Equal(github.String("task")))
 					Ω(deployment.Description).Should(Equal(github.String("desc")))
-					Ω(deployment.Payload).Should(Equal(github.String("{\"one\": \"two\"}")))
+					Ω(deployment.Payload).Should(Equal(github.String(`{"concourse_payload":{"atc_external_url":"","build_id":"","build_job_name":"","build_name":"","build_pipeline_name":"","build_team_name":""},"one":"two"}`)))
 					Ω(deployment.Environment).Should(Equal(github.String("env")))
 				})
 

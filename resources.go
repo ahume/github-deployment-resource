@@ -48,65 +48,71 @@ type OutResponse struct {
 }
 
 type OutParams struct {
-	Type        string      `json:"type"`
+	Type        string `json:"type"`
 	ID          string
 	Ref         string
 	Environment string
 	Task        string
 	State       string
 	Description string
-	Payload     string
+	Payload     map[string]interface{}
 	PayloadPath string `json:"payload_path"`
 
-	RawID						json.RawMessage `json:"id"`
-	RawState				json.RawMessage `json:"state"`
-	RawRef					json.RawMessage `json:"ref"`
-	RawTask					json.RawMessage `json:"task"`
-	RawEnvironment	json.RawMessage `json:"environment"`
-	RawDescription	json.RawMessage `json:"description"`
-	RawPayload			json.RawMessage `json:"payload"`
+	RawID          json.RawMessage `json:"id"`
+	RawState       json.RawMessage `json:"state"`
+	RawRef         json.RawMessage `json:"ref"`
+	RawTask        json.RawMessage `json:"task"`
+	RawEnvironment json.RawMessage `json:"environment"`
+	RawDescription json.RawMessage `json:"description"`
+	RawPayload     json.RawMessage `json:"payload"`
 }
 
 // Used to avoid recursion in UnmarshalJSON below.
 type outParams OutParams
+
 func (p *OutParams) UnmarshalJSON(b []byte) (err error) {
 	j := outParams{
 		Type: "status",
 	}
+
 	if err = json.Unmarshal(b, &j); err == nil {
 		*p = OutParams(j)
 		if p.RawID != nil {
-  		p.ID = getStringOrStringFromFile(p.RawID)
-  	}
-  	if p.RawState != nil {
-  		p.State = getStringOrStringFromFile(p.RawState)
-  	}
+			p.ID = getStringOrStringFromFile(p.RawID)
+		}
+
+		if p.RawState != nil {
+			p.State = getStringOrStringFromFile(p.RawState)
+		}
+
 		if p.RawRef != nil {
-  		p.Ref = getStringOrStringFromFile(p.RawRef)
-  	}
-  	if p.RawTask != nil {
-  		p.Task = getStringOrStringFromFile(p.RawTask)
-  	}
-  	if p.RawEnvironment != nil {
-  		p.Environment = getStringOrStringFromFile(p.RawEnvironment)
-  	}
-  	if p.RawDescription != nil {
-  		p.Description = getStringOrStringFromFile(p.RawDescription)
-  	}
+			p.Ref = getStringOrStringFromFile(p.RawRef)
+		}
 
-  	var payloadFromString map[string]interface{}
-  	json.Unmarshal(p.RawPayload, &payloadFromString)
-  	payload, _ := json.Marshal(&payloadFromString)
+		if p.RawTask != nil {
+			p.Task = getStringOrStringFromFile(p.RawTask)
+		}
 
-  	if p.PayloadPath != "" {
+		if p.RawEnvironment != nil {
+			p.Environment = getStringOrStringFromFile(p.RawEnvironment)
+		}
+
+		if p.RawDescription != nil {
+			p.Description = getStringOrStringFromFile(p.RawDescription)
+		}
+
+		var payload map[string]interface{}
+		json.Unmarshal(p.RawPayload, &payload)
+
+		if p.PayloadPath != "" {
 			stringFromFile := fileContents(p.PayloadPath)
 			var payloadFromFile map[string]interface{}
 			json.Unmarshal([]byte(stringFromFile), &payloadFromFile)
 
-			payload, _ = json.Marshal(mergemap.Merge(payloadFromFile, payloadFromString))
+			payload = mergemap.Merge(payloadFromFile, payload)
 		}
 
-		p.Payload = string(payload)
+		p.Payload = payload
 
 		return
 	}
@@ -130,7 +136,7 @@ func NewOutRequest() OutRequest {
 	return OutRequest{}
 }
 
-func getStringOrStringFromFile (field json.RawMessage) (string) {
+func getStringOrStringFromFile(field json.RawMessage) string {
 	var rawValue interface{}
 	if err := json.Unmarshal(field, &rawValue); err == nil {
 		switch rawValue := rawValue.(type) {

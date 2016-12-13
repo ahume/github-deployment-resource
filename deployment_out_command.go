@@ -1,10 +1,12 @@
 package resource
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 
@@ -33,11 +35,27 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 		RequiredContexts: &[]string{},
 	}
 
+	concoursePayload := map[string]interface{}{
+		"build_id":            os.Getenv("BUILD_ID"),
+		"build_name":          os.Getenv("BUILD_NAME"),
+		"build_job_name":      os.Getenv("BUILD_JOB_NAME"),
+		"build_pipeline_name": os.Getenv("BUILD_PIPELINE_NAME"),
+		"build_team_name":     os.Getenv("BUILD_TEAM_NAME"),
+		"atc_external_url":    os.Getenv("ATC_EXTERNAL_URL"),
+	}
+
+	if request.Params.Payload != nil {
+		request.Params.Payload["concourse_payload"] = concoursePayload
+	} else {
+		request.Params.Payload = map[string]interface{}{
+			"concourse_payload": concoursePayload,
+		}
+	}
+	payload, err := json.Marshal(request.Params.Payload)
+	newDeployment.Payload = github.String(string(payload))
+
 	if len(request.Params.Task) > 0 {
 		newDeployment.Task = github.String(request.Params.Task)
-	}
-	if len(request.Params.Payload) > 0 {
-		newDeployment.Payload = github.String(request.Params.Payload)
 	}
 	if len(request.Params.Environment) > 0 {
 		newDeployment.Environment = github.String(request.Params.Environment)
