@@ -18,3 +18,10 @@ func newDeployment(id int) *github.Deployment {
 		ID: github.Int(id),
 	}
 }
+
+func newDeploymentWithEnvironment(id int, env *string) *github.Deployment {
+	return &github.Deployment{
+		ID:          github.Int(id),
+		Environment: env,
+	}
+}

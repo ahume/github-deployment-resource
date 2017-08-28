@@ -35,9 +35,16 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 
 	for _, deployment := range deployments {
 		id := *deployment.ID
+		if request.Source.Environment != "" && request.Source.Environment != *deployment.Environment {
+			continue
+		}
 		if strconv.Itoa(id) >= request.Version.ID {
 			latestVersions = append(latestVersions, Version{ID: strconv.Itoa(id)})
 		}
+	}
+
+	if len(latestVersions) == 0 {
+		return []Version{}, nil
 	}
 
 	slice.Sort(latestVersions[:], func(i, j int) bool {

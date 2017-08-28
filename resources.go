@@ -15,6 +15,7 @@ type Source struct {
 	Repository   string `json:"repository"`
 	AccessToken  string `json:"access_token"`
 	GitHubAPIURL string `json:"github_api_url"`
+	Environment  string `json:"environment"`
 }
 
 type Version struct {
