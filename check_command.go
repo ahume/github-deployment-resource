@@ -34,10 +34,20 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 	var latestVersions []Version
 
 	for _, deployment := range deployments {
-		id := *deployment.ID
-		if request.Source.Environment != "" && request.Source.Environment != *deployment.Environment {
-			continue
+		if len(request.Source.Environments) > 0 {
+			found := false
+			for _, env := range request.Source.Environments {
+				if env == *deployment.Environment {
+					found = true
+				}
+			}
+
+			if !found {
+				continue
+			}
 		}
+
+		id := *deployment.ID
 		if strconv.Itoa(id) >= request.Version.ID {
 			latestVersions = append(latestVersions, Version{ID: strconv.Itoa(id)})
 		}

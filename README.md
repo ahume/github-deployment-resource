@@ -16,7 +16,7 @@ see the [API documentation](https://developer.github.com/v3/repos/deployments/).
 * `github_api_url`: *Optional.* If you use a non-public GitHub deployment then
   you can set your API URL here.
 
-* `environments`: *Optional.* A list of environments to get versions for. [Not implemented]
+* `environments`: *Optional.* A list of environments to get versions for.
 
 ### Example
 

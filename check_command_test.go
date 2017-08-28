@@ -20,8 +20,8 @@ var _ = Describe("Check Command", func() {
 		returnedDeployments        []*github.Deployment
 		returnedDeploymentStatuses []*github.DeploymentStatus
 
-		requestedEnvironment string
-		unwantedEnvironment  string
+		requestedEnvironments []string
+		unwantedEnvironment   string
 	)
 
 	BeforeEach(func() {
@@ -138,11 +138,15 @@ var _ = Describe("Check Command", func() {
 	Context("when environment provided to filter on", func() {
 		Context("when there are no deployments", func() {
 			BeforeEach(func() {
+				requestedEnvironments = []string{"prd", "production"}
 				returnedDeployments = []*github.Deployment{}
 			})
 
 			It("returns no versions", func() {
 				versions, err := command.Run(resource.CheckRequest{
+					Source: resource.Source{
+						Environments: requestedEnvironments,
+					},
 					Version: resource.Version{
 						ID: "3",
 					},
@@ -154,12 +158,12 @@ var _ = Describe("Check Command", func() {
 
 		Context("when there are deployments but not related to filtered environment", func() {
 			BeforeEach(func() {
-				requestedEnvironment = "production"
+				requestedEnvironments = []string{"production"}
 				unwantedEnvironment = "dev"
 				returnedDeployments = []*github.Deployment{
-					newDeploymentWithEnvironment(3, &unwantedEnvironment),
-					newDeploymentWithEnvironment(2, &unwantedEnvironment),
-					newDeploymentWithEnvironment(1, &unwantedEnvironment),
+					newDeploymentWithEnvironment(3, unwantedEnvironment),
+					newDeploymentWithEnvironment(2, unwantedEnvironment),
+					newDeploymentWithEnvironment(1, unwantedEnvironment),
 				}
 			})
 
@@ -168,7 +172,7 @@ var _ = Describe("Check Command", func() {
 
 				versions, err := command.Run(resource.CheckRequest{
 					Source: resource.Source{
-						Environment: requestedEnvironment,
+						Environments: requestedEnvironments,
 					},
 				})
 				Ω(err).ShouldNot(HaveOccurred())
@@ -178,14 +182,14 @@ var _ = Describe("Check Command", func() {
 
 		Context("when there are deployments related to filtered environment", func() {
 			BeforeEach(func() {
-				requestedEnvironment = "production"
+				requestedEnvironments = []string{"production", "prd"}
 				unwantedEnvironment = "dev"
 				returnedDeployments = []*github.Deployment{
-					newDeploymentWithEnvironment(5, &unwantedEnvironment),
-					newDeploymentWithEnvironment(4, &requestedEnvironment),
-					newDeploymentWithEnvironment(3, &requestedEnvironment),
-					newDeploymentWithEnvironment(2, &requestedEnvironment),
-					newDeploymentWithEnvironment(1, &unwantedEnvironment),
+					newDeploymentWithEnvironment(5, unwantedEnvironment),
+					newDeploymentWithEnvironment(4, requestedEnvironments[0]),
+					newDeploymentWithEnvironment(3, requestedEnvironments[1]),
+					newDeploymentWithEnvironment(2, requestedEnvironments[0]),
+					newDeploymentWithEnvironment(1, unwantedEnvironment),
 				}
 			})
 
@@ -196,7 +200,7 @@ var _ = Describe("Check Command", func() {
 
 					versions, err := command.Run(resource.CheckRequest{
 						Source: resource.Source{
-							Environment: requestedEnvironment,
+							Environments: requestedEnvironments,
 						},
 					})
 
@@ -216,7 +220,7 @@ var _ = Describe("Check Command", func() {
 
 					versions, err := command.Run(resource.CheckRequest{
 						Source: resource.Source{
-							Environment: requestedEnvironment,
+							Environments: requestedEnvironments,
 						},
 						Version: resource.Version{
 							ID: "4",
@@ -236,7 +240,7 @@ var _ = Describe("Check Command", func() {
 
 					versions, err := command.Run(resource.CheckRequest{
 						Source: resource.Source{
-							Environment: requestedEnvironment,
+							Environments: requestedEnvironments,
 						},
 						Version: resource.Version{
 							ID: "3",
