@@ -27,10 +27,6 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 		return []Version{}, err
 	}
 
-	if len(deployments) == 0 {
-		return []Version{}, nil
-	}
-
 	var latestVersions []Version
 
 	for _, deployment := range deployments {
