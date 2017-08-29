@@ -27,17 +27,30 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 		return []Version{}, err
 	}
 
-	if len(deployments) == 0 {
-		return []Version{}, nil
-	}
-
 	var latestVersions []Version
 
 	for _, deployment := range deployments {
+		if len(request.Source.Environments) > 0 {
+			found := false
+			for _, env := range request.Source.Environments {
+				if env == *deployment.Environment {
+					found = true
+				}
+			}
+
+			if !found {
+				continue
+			}
+		}
+
 		id := *deployment.ID
 		if strconv.Itoa(id) >= request.Version.ID {
 			latestVersions = append(latestVersions, Version{ID: strconv.Itoa(id)})
 		}
+	}
+
+	if len(latestVersions) == 0 {
+		return []Version{}, nil
 	}
 
 	slice.Sort(latestVersions[:], func(i, j int) bool {

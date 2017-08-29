@@ -8,7 +8,7 @@ import (
 	"github.com/ahume/go-github/github"
 )
 
-//go:generate counterfeiter . GitHub
+//go:generate counterfeiter -o fakes/fake_git_hub.go . GitHub
 
 type GitHub interface {
 	ListDeployments() ([]*github.Deployment, error)
