@@ -185,8 +185,8 @@ var _ = Describe("Check Command", func() {
 				requestedEnvironments = []string{"production", "prd"}
 				unwantedEnvironment = "dev"
 				returnedDeployments = []*github.Deployment{
-					newDeploymentWithEnvironment(5, unwantedEnvironment),
-					newDeploymentWithEnvironment(4, requestedEnvironments[0]),
+					newDeploymentWithEnvironment(15, unwantedEnvironment),
+					newDeploymentWithEnvironment(10, requestedEnvironments[0]),
 					newDeploymentWithEnvironment(3, requestedEnvironments[1]),
 					newDeploymentWithEnvironment(2, requestedEnvironments[0]),
 					newDeploymentWithEnvironment(1, unwantedEnvironment),
@@ -208,7 +208,7 @@ var _ = Describe("Check Command", func() {
 					Ω(versions).Should(HaveLen(1))
 
 					Ω(versions[0]).Should(Equal(resource.Version{
-						ID: "4",
+						ID: "10",
 					}))
 				})
 
@@ -223,7 +223,7 @@ var _ = Describe("Check Command", func() {
 							Environments: requestedEnvironments,
 						},
 						Version: resource.Version{
-							ID: "4",
+							ID: "10",
 						},
 					})
 
@@ -231,7 +231,7 @@ var _ = Describe("Check Command", func() {
 					Ω(versions).Should(HaveLen(1))
 
 					Ω(versions[0]).Should(Equal(resource.Version{
-						ID: "4",
+						ID: "10",
 					}))
 				})
 
@@ -254,7 +254,7 @@ var _ = Describe("Check Command", func() {
 						ID: "3",
 					}))
 					Ω(versions[1]).Should(Equal(resource.Version{
-						ID: "4",
+						ID: "10",
 					}))
 				})
 
