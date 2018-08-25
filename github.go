@@ -33,6 +33,10 @@ func NewGitHubClient(source Source) (*GitHubClient, error) {
 		return nil, err
 	}
 
+	if source.GitHubAPIURL != nil {
+		client.BaseURL = source.GitHubAPIURL
+	}
+
 	return &GitHubClient{
 		client:     client,
 		user:       source.User,
