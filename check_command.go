@@ -2,9 +2,10 @@ package resource
 
 import (
 	"fmt"
-	"github.com/bradfitz/slice"
 	"io"
 	"strconv"
+
+	"github.com/bradfitz/slice"
 )
 
 type CheckCommand struct {
@@ -44,8 +45,13 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 		}
 
 		id := *deployment.ID
-		if strconv.Itoa(id) >= request.Version.ID {
+		lastID, err := strconv.Atoi(request.Version.ID)
+		if err != nil {
 			latestVersions = append(latestVersions, Version{ID: strconv.Itoa(id)})
+		} else {
+			if id >= lastID {
+				latestVersions = append(latestVersions, Version{ID: strconv.Itoa(id)})
+			}
 		}
 	}
 
@@ -54,7 +60,9 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 	}
 
 	slice.Sort(latestVersions[:], func(i, j int) bool {
-		return latestVersions[i].ID < latestVersions[j].ID
+		iID, _ := strconv.Atoi(latestVersions[i].ID)
+		jID, _ := strconv.Atoi(latestVersions[j].ID)
+		return iID < jID
 	})
 
 	latestVersion := latestVersions[len(latestVersions)-1]
