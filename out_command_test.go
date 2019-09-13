@@ -7,9 +7,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ahume/go-github/github"
+	"github.com/google/go-github/v28/github"
 
-	"github.com/ahume/github-deployment-resource"
+	resource "github.com/ahume/github-deployment-resource"
 	"github.com/ahume/github-deployment-resource/fakes"
 )
 
@@ -27,9 +27,9 @@ var _ = Describe("Status Out Command", func() {
 		command = resource.NewOutCommand(githubClient, ioutil.Discard)
 	})
 
-	buildDeployment := func(id int, env string, task string) *github.Deployment {
+	buildDeployment := func(id int64, env string, task string) *github.Deployment {
 		return &github.Deployment{
-			ID:          github.Int(id),
+			ID:          github.Int64(id),
 			Environment: github.String(env),
 			Task:        github.String(task),
 			Ref:         github.String("master"),
@@ -42,9 +42,9 @@ var _ = Describe("Status Out Command", func() {
 		}
 	}
 
-	buildDeploymentStatus := func(ID int, state string) *github.DeploymentStatus {
+	buildDeploymentStatus := func(ID int64, state string) *github.DeploymentStatus {
 		return &github.DeploymentStatus{
-			ID:        github.Int(ID),
+			ID:        github.Int64(ID),
 			State:     github.String(state),
 			CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 20, 20, 20, 0, time.UTC)},
 		}
@@ -58,7 +58,7 @@ var _ = Describe("Status Out Command", func() {
 			}, nil)
 
 			githubClient.CreateDeploymentStatusReturns(&github.DeploymentStatus{
-				ID:        github.Int(12),
+				ID:        github.Int64(12),
 				State:     github.String("success"),
 				CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 20, 20, 20, 0, time.UTC)},
 			}, nil)
@@ -80,7 +80,7 @@ var _ = Describe("Status Out Command", func() {
 				Ω(githubClient.CreateDeploymentStatusCallCount()).Should(Equal(1))
 				id, status := githubClient.CreateDeploymentStatusArgsForCall(0)
 
-				Ω(id).Should(Equal(*github.Int(1234)))
+				Ω(id).Should(Equal(*github.Int64(1234)))
 				Ω(status.State).Should(Equal(github.String("success")))
 			})
 

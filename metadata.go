@@ -1,8 +1,9 @@
 package resource
 
 import (
-	"github.com/ahume/go-github/github"
 	"strconv"
+
+	"github.com/google/go-github/v28/github"
 )
 
 func metadataFromDeployment(deployment *github.Deployment, statuses []*github.DeploymentStatus) []MetadataPair {
@@ -12,7 +13,7 @@ func metadataFromDeployment(deployment *github.Deployment, statuses []*github.De
 		id := *deployment.ID
 		nameMeta := MetadataPair{
 			Name:  "id",
-			Value: strconv.Itoa(id),
+			Value: strconv.FormatInt(id, 10),
 		}
 		metadata = append(metadata, nameMeta)
 	}
@@ -78,7 +79,7 @@ func metadataFromDeployment(deployment *github.Deployment, statuses []*github.De
 			id := *statuses[0].ID
 			nameMeta := MetadataPair{
 				Name:  "status_id",
-				Value: strconv.Itoa(id),
+				Value: strconv.FormatInt(id, 10),
 			}
 			metadata = append(metadata, nameMeta)
 		}

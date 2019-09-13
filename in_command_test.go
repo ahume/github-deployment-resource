@@ -11,9 +11,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ahume/go-github/github"
+	"github.com/google/go-github/v28/github"
 
-	"github.com/ahume/github-deployment-resource"
+	resource "github.com/ahume/github-deployment-resource"
 	"github.com/ahume/github-deployment-resource/fakes"
 )
 
@@ -49,9 +49,9 @@ var _ = Describe("In Command", func() {
 		Ω(os.RemoveAll(tmpDir)).Should(Succeed())
 	})
 
-	buildDeployment := func(ID int, env string, task string) *github.Deployment {
+	buildDeployment := func(ID int64, env string, task string) *github.Deployment {
 		return &github.Deployment{
-			ID:          github.Int(ID),
+			ID:          github.Int64(ID),
 			Environment: github.String(env),
 			Task:        github.String(task),
 			Ref:         github.String("master"),
@@ -64,9 +64,9 @@ var _ = Describe("In Command", func() {
 		}
 	}
 
-	buildDeploymentStatus := func(ID int, state string) *github.DeploymentStatus {
+	buildDeploymentStatus := func(ID int64, state string) *github.DeploymentStatus {
 		return &github.DeploymentStatus{
-			ID:        github.Int(ID),
+			ID:        github.Int64(ID),
 			State:     github.String(state),
 			CreatedAt: &github.Timestamp{time.Date(2016, 01, 20, 15, 15, 15, 0, time.UTC)},
 		}

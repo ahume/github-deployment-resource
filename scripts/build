@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -e -u -x
-
-mkdir -p /opt/resource
-go build -o /opt/resource/check ./cmd/check
-go build -o /opt/resource/in ./cmd/in
-go build -o /opt/resource/out ./cmd/out

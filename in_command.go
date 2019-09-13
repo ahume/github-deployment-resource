@@ -29,7 +29,7 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 		return InResponse{}, err
 	}
 
-	id, _ := strconv.Atoi(request.Version.ID)
+	id, _ := strconv.ParseInt(request.Version.ID, 10, 64)
 	fmt.Fprintln(c.writer, "getting deployment")
 	deployment, err := c.github.GetDeployment(id)
 	if err != nil {
@@ -103,7 +103,7 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 
 	return InResponse{
 		Version: Version{
-			ID:       strconv.Itoa(*deployment.ID),
+			ID:       strconv.FormatInt(*deployment.ID, 10),
 			Statuses: latestStatus,
 		},
 		Metadata: metadataFromDeployment(deployment, statuses),

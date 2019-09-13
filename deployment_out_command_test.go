@@ -8,9 +8,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ahume/go-github/github"
+	"github.com/google/go-github/v28/github"
 
-	"github.com/ahume/github-deployment-resource"
+	resource "github.com/ahume/github-deployment-resource"
 	"github.com/ahume/github-deployment-resource/fakes"
 )
 
@@ -43,7 +43,7 @@ var _ = Describe("Deployment Out Command", func() {
 			Context("when all possible params are present", func() {
 				BeforeEach(func() {
 					githubClient.CreateDeploymentReturns(&github.Deployment{
-						ID:          github.Int(1),
+						ID:          github.Int64(1),
 						Ref:         github.String("ref"),
 						SHA:         github.String("1234"),
 						Task:        github.String("task"),
@@ -113,7 +113,7 @@ var _ = Describe("Deployment Out Command", func() {
 			Context("when only required params are present", func() {
 				BeforeEach(func() {
 					githubClient.CreateDeploymentReturns(&github.Deployment{
-						ID:  github.Int(1),
+						ID:  github.Int64(1),
 						Ref: github.String("ref"),
 						SHA: github.String("1234"),
 						Creator: &github.User{

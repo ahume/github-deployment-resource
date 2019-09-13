@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ahume/go-github/github"
+	"github.com/google/go-github/v28/github"
 
-	"github.com/ahume/github-deployment-resource"
+	resource "github.com/ahume/github-deployment-resource"
 	"github.com/ahume/github-deployment-resource/fakes"
 )
 
