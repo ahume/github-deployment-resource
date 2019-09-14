@@ -26,12 +26,12 @@ func NewDeploymentOutCommand(github GitHub, writer io.Writer) *DeploymentOutComm
 }
 
 func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutResponse, error) {
-	if request.Params.Ref == "" {
+	if request.Params.Ref == nil {
 		return OutResponse{}, errors.New("ref is a required parameter")
 	}
 
 	newDeployment := &github.DeploymentRequest{
-		Ref:              github.String(request.Params.Ref),
+		Ref:              request.Params.Ref,
 		RequiredContexts: &[]string{},
 	}
 
@@ -47,23 +47,27 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 	}
 
 	if request.Params.Payload != nil {
-		request.Params.Payload["concourse_payload"] = concoursePayload
+		payload := *request.Params.Payload
+		payload["concourse_payload"] = concoursePayload
 	} else {
-		request.Params.Payload = map[string]interface{}{
+		request.Params.Payload = &map[string]interface{}{
 			"concourse_payload": concoursePayload,
 		}
 	}
-	payload, err := json.Marshal(request.Params.Payload)
-	newDeployment.Payload = github.String(string(payload))
+	p, err := json.Marshal(request.Params.Payload)
+	newDeployment.Payload = github.String(string(p))
 
-	if len(request.Params.Task) > 0 {
-		newDeployment.Task = github.String(request.Params.Task)
+	if request.Params.Task != nil {
+		newDeployment.Task = request.Params.Task
 	}
-	if len(request.Params.Environment) > 0 {
-		newDeployment.Environment = github.String(request.Params.Environment)
+	if request.Params.Environment != nil {
+		newDeployment.Environment = request.Params.Environment
 	}
-	if len(request.Params.Description) > 0 {
-		newDeployment.Description = github.String(request.Params.Description)
+	if request.Params.Description != nil {
+		newDeployment.Description = request.Params.Description
+	}
+	if request.Params.AutoMerge != nil {
+		newDeployment.AutoMerge = request.Params.AutoMerge
 	}
 
 	fmt.Fprintln(c.writer, "creating deployment")

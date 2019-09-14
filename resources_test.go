@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ahume/github-deployment-resource"
+	resource "github.com/ahume/github-deployment-resource"
 )
 
 func file(path, contents string) {
@@ -50,7 +50,7 @@ var _ = Describe("Resources", func() {
 				"params": {}
 				}`))
 			_ = json.NewDecoder(r).Decode(&p)
-			Ω(p.Params.Type).Should(Equal("status"))
+			Ω(*p.Params.Type).Should(Equal("status"))
 		})
 
 		It("gets values from strings", func() {
@@ -67,12 +67,12 @@ var _ = Describe("Resources", func() {
 			err := json.NewDecoder(r).Decode(&p)
 
 			Ω(err).ShouldNot(HaveOccurred())
-			Ω(p.Params.Type).Should(Equal("deployment"))
-			Ω(p.Params.Ref).Should(Equal("ref-string"))
-			Ω(p.Params.State).Should(Equal("state-string"))
-			Ω(p.Params.Task).Should(Equal("task-string"))
-			Ω(p.Params.Environment).Should(Equal("environment-string"))
-			Ω(p.Params.Description).Should(Equal("description-string"))
+			Ω(*p.Params.Type).Should(Equal("deployment"))
+			Ω(*p.Params.Ref).Should(Equal("ref-string"))
+			Ω(*p.Params.State).Should(Equal("state-string"))
+			Ω(*p.Params.Task).Should(Equal("task-string"))
+			Ω(*p.Params.Environment).Should(Equal("environment-string"))
+			Ω(*p.Params.Description).Should(Equal("description-string"))
 		})
 
 		It("gets values from files", func() {
@@ -116,13 +116,13 @@ var _ = Describe("Resources", func() {
 			err := json.NewDecoder(r).Decode(&p)
 
 			Ω(err).ShouldNot(HaveOccurred())
-			Ω(p.Params.Type).Should(Equal("deployment"))
-			Ω(p.Params.ID).Should(Equal("id-from-file"))
-			Ω(p.Params.Ref).Should(Equal("ref-from-file"))
-			Ω(p.Params.State).Should(Equal("state-from-file"))
-			Ω(p.Params.Task).Should(Equal("task-from-file"))
-			Ω(p.Params.Environment).Should(Equal("environment-from-file"))
-			Ω(p.Params.Description).Should(Equal("description-from-file"))
+			Ω(*p.Params.Type).Should(Equal("deployment"))
+			Ω(*p.Params.ID).Should(Equal("id-from-file"))
+			Ω(*p.Params.Ref).Should(Equal("ref-from-file"))
+			Ω(*p.Params.State).Should(Equal("state-from-file"))
+			Ω(*p.Params.Task).Should(Equal("task-from-file"))
+			Ω(*p.Params.Environment).Should(Equal("environment-from-file"))
+			Ω(*p.Params.Description).Should(Equal("description-from-file"))
 		})
 
 		It("gets raw payload", func() {
@@ -136,10 +136,11 @@ var _ = Describe("Resources", func() {
 				}
 			}`))
 			err := json.NewDecoder(r).Decode(&p)
+			payload := *p.Params.Payload
 			Ω(err).ShouldNot(HaveOccurred())
-			Ω(p.Params.Type).Should(Equal("deployment"))
-			Ω(p.Params.Payload["one"]).Should(Equal("two"))
-			Ω(p.Params.Payload["three"]).Should(Equal("four"))
+			Ω(*p.Params.Type).Should(Equal("deployment"))
+			Ω(payload["one"]).Should(Equal("two"))
+			Ω(payload["three"]).Should(Equal("four"))
 		})
 
 		It("merges raw payload into file payload", func() {
@@ -154,10 +155,11 @@ var _ = Describe("Resources", func() {
 				}
 			}`))
 			err := json.NewDecoder(r).Decode(&p)
+			payload := *p.Params.Payload
 			Ω(err).ShouldNot(HaveOccurred())
-			Ω(p.Params.Type).Should(Equal("deployment"))
-			Ω(p.Params.Payload["one"]).Should(Equal("two"))
-			Ω(p.Params.Payload["three"]).Should(Equal("four"))
+			Ω(*p.Params.Type).Should(Equal("deployment"))
+			Ω(payload["one"]).Should(Equal("two"))
+			Ω(payload["three"]).Should(Equal("four"))
 		})
 	})
 })
