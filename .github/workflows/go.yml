@@ -28,7 +28,7 @@ jobs:
       run: go test -v ./...
 
     - name: Publish Image
-      if: github.event_name != 'pull_request' && startsWith(github.ref, 'v')
+      if: startsWith(github.ref, 'v')
       uses: elgohr/Publish-Docker-Github-Action@1.11
       with:
         name: andyhume/github-deployment-resource
