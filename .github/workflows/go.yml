@@ -19,5 +19,9 @@ jobs:
     - name: Test
       run: go test -v ./...
 
-    - name: Build
-      run: go build -v .
+    - name: Publish Image
+      uses: elgohr/Publish-Docker-Github-Action@1.11
+      with:
+        name: andyhume/github-deployment-resource
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
