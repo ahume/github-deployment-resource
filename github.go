@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -33,6 +34,13 @@ func NewGitHubClient(source Source) (*GitHubClient, error) {
 	client, err := oauthClient(source)
 	if err != nil {
 		return nil, err
+	}
+
+	if source.GitHubAPIURL != "" {
+		client.BaseURL, err = url.Parse(source.GitHubAPIURL)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &GitHubClient{
