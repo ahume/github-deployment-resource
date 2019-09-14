@@ -1,7 +1,7 @@
 package resource_test
 
 import (
-	"github.com/ahume/go-github/github"
+	"github.com/google/go-github/v28/github"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -13,15 +13,15 @@ func TestGithubDeploymentResource(t *testing.T) {
 	RunSpecs(t, "GithubDeploymentResource Suite")
 }
 
-func newDeployment(id int) *github.Deployment {
+func newDeployment(id int64) *github.Deployment {
 	return &github.Deployment{
-		ID: github.Int(id),
+		ID: github.Int64(id),
 	}
 }
 
-func newDeploymentWithEnvironment(id int, env string) *github.Deployment {
+func newDeploymentWithEnvironment(id int64, env string) *github.Deployment {
 	return &github.Deployment{
-		ID:          github.Int(id),
+		ID:          github.Int64(id),
 		Environment: &env,
 	}
 }

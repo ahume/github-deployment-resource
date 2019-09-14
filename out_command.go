@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ahume/go-github/github"
+	"github.com/google/go-github/v28/github"
 )
 
 type OutCommand struct {
@@ -31,7 +31,7 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 		return OutResponse{}, errors.New("state is a required parameter")
 	}
 
-	idInt, err := strconv.Atoi(request.Params.ID)
+	idInt, err := strconv.ParseInt(request.Params.ID, 10, 64)
 	if err != nil {
 		return OutResponse{}, err
 	}

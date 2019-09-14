@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ahume/go-github/github"
+	"github.com/google/go-github/v28/github"
 )
 
 type DeploymentOutCommand struct {
@@ -73,7 +73,7 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 	}
 
 	return OutResponse{
-		Version:  Version{ID: strconv.Itoa(*deployment.ID)},
+		Version:  Version{ID: strconv.FormatInt(*deployment.ID, 10)},
 		Metadata: metadataFromDeployment(deployment, []*github.DeploymentStatus{}),
 	}, nil
 }
