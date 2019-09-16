@@ -61,7 +61,7 @@ type OutParams struct {
 	PayloadPath string `json:"payload_path"`
 
 	RawID          json.RawMessage `json:"id"`
-    RawTarget      json.RawMessage `json:"target"`
+	RawTarget      json.RawMessage `json:"target"`
 	RawState       json.RawMessage `json:"state"`
 	RawRef         json.RawMessage `json:"ref"`
 	RawTask        json.RawMessage `json:"task"`
@@ -105,8 +105,8 @@ func (p *OutParams) UnmarshalJSON(b []byte) (err error) {
 		}
 
 		if p.RawTarget != nil {
-            p.Target = getStringOrStringFromFile(p.RawTarget)
-        }
+			p.Target = getStringOrStringFromFile(p.RawTarget)
+		}
 
 		var payload map[string]interface{}
 		json.Unmarshal(p.RawPayload, &payload)
