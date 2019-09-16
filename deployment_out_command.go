@@ -33,6 +33,7 @@ func (c *DeploymentOutCommand) Run(sourceDir string, request OutRequest) (OutRes
 	newDeployment := &github.DeploymentRequest{
 		Ref:              github.String(request.Params.Ref),
 		RequiredContexts: &[]string{},
+		AutoMerge:        false
 	}
 
 	concoursePayload := map[string]interface{}{

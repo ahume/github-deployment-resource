@@ -46,8 +46,8 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 		Description: github.String(request.Params.Description),
 	}
 
-	if request.Params.Target == "" {
-	    newStatus.LogURL = github.String(request.Params.Target)
+	if request.Params.Target != "" {
+	    newStatus.EnvironmentURL = github.String(request.Params.Target)
 	}
 
 	fmt.Fprintln(c.writer, "creating deployment status")
