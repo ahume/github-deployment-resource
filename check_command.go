@@ -45,12 +45,8 @@ func (c *CheckCommand) Run(request CheckRequest) ([]Version, error) {
 
 		id := *deployment.ID
 		lastID, err := strconv.ParseInt(request.Version.ID, 10, 64)
-		if err != nil {
+		if err != nil || id >= lastID {
 			latestVersions = append(latestVersions, Version{ID: strconv.FormatInt(id, 10)})
-		} else {
-			if id >= lastID {
-				latestVersions = append(latestVersions, Version{ID: strconv.FormatInt(id, 10)})
-			}
 		}
 	}
 
