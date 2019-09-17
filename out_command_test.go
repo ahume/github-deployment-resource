@@ -67,8 +67,8 @@ var _ = Describe("Status Out Command", func() {
 			BeforeEach(func() {
 				request = resource.OutRequest{
 					Params: resource.OutParams{
-						ID:    "1234",
-						State: "success",
+						ID:    github.String("1234"),
+						State: github.String("success"),
 					},
 				}
 			})
@@ -134,7 +134,7 @@ var _ = Describe("Status Out Command", func() {
 			It("state missing returns appropriate error", func() {
 				_, err := command.Run(sourcesDir, resource.OutRequest{
 					Params: resource.OutParams{
-						ID: "1",
+						ID: github.String("1"),
 					},
 				})
 				Ω(err).Should(MatchError("state is a required parameter"))

@@ -24,14 +24,14 @@ func NewOutCommand(github GitHub, writer io.Writer) *OutCommand {
 }
 
 func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, error) {
-	if request.Params.ID == "" {
+	if request.Params.ID == nil {
 		return OutResponse{}, errors.New("id is a required parameter")
 	}
-	if request.Params.State == "" {
+	if request.Params.State == nil {
 		return OutResponse{}, errors.New("state is a required parameter")
 	}
 
-	idInt, err := strconv.ParseInt(request.Params.ID, 10, 64)
+	idInt, err := strconv.ParseInt(*request.Params.ID, 10, 64)
 	if err != nil {
 		return OutResponse{}, err
 	}
@@ -42,8 +42,8 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 	}
 
 	newStatus := &github.DeploymentStatusRequest{
-		State:       github.String(request.Params.State),
-		Description: github.String(request.Params.Description),
+		State:       request.Params.State,
+		Description: request.Params.Description,
 	}
 
 	fmt.Fprintln(c.writer, "creating deployment status")
@@ -65,7 +65,7 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 
 	return OutResponse{
 		Version: Version{
-			ID:       request.Params.ID,
+			ID:       *request.Params.ID,
 			Statuses: latestStatus,
 		},
 		Metadata: metadataFromDeployment(deployment, statuses),

@@ -57,13 +57,14 @@ var _ = Describe("Deployment Out Command", func() {
 
 					request = resource.OutRequest{
 						Params: resource.OutParams{
-							Ref:         "ref",
-							Task:        "task",
-							Description: "desc",
-							Payload: map[string]interface{}{
+							Ref:         github.String("ref"),
+							Task:        github.String("task"),
+							Description: github.String("desc"),
+							Payload: &map[string]interface{}{
 								"one": "two",
 							},
-							Environment: "env",
+							Environment: github.String("env"),
+							AutoMerge:   github.Bool(false),
 						},
 					}
 				})
@@ -79,6 +80,7 @@ var _ = Describe("Deployment Out Command", func() {
 					Ω(deployment.Description).Should(Equal(github.String("desc")))
 					Ω(deployment.Payload).Should(Equal(github.String(`{"concourse_payload":{"atc_external_url":"","build_id":"","build_job_name":"","build_name":"","build_pipeline_name":"","build_team_name":"","build_url":"/teams//pipelines//jobs//builds/"},"one":"two"}`)))
 					Ω(deployment.Environment).Should(Equal(github.String("env")))
+					Ω(deployment.AutoMerge).Should(Equal(github.Bool(false)))
 				})
 
 				It("returns some metadata", func() {
@@ -124,7 +126,7 @@ var _ = Describe("Deployment Out Command", func() {
 
 					request = resource.OutRequest{
 						Params: resource.OutParams{
-							Ref: "ref",
+							Ref: github.String("ref"),
 						},
 					}
 				})
