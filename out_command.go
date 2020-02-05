@@ -58,15 +58,9 @@ func (c *OutCommand) Run(sourceDir string, request OutRequest) (OutResponse, err
 		return OutResponse{}, err
 	}
 
-	latestStatus := ""
-	if len(statuses) > 0 {
-		latestStatus = *statuses[0].State
-	}
-
 	return OutResponse{
 		Version: Version{
-			ID:       *request.Params.ID,
-			Statuses: latestStatus,
+			ID: *request.Params.ID,
 		},
 		Metadata: metadataFromDeployment(deployment, statuses),
 	}, nil

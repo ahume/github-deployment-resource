@@ -96,15 +96,9 @@ func (c *InCommand) Run(destDir string, request InRequest) (InResponse, error) {
 		return InResponse{}, err
 	}
 
-	latestStatus := ""
-	if len(statuses) > 0 {
-		latestStatus = *statuses[0].State
-	}
-
 	return InResponse{
 		Version: Version{
-			ID:       strconv.FormatInt(*deployment.ID, 10),
-			Statuses: latestStatus,
+			ID: strconv.FormatInt(*deployment.ID, 10),
 		},
 		Metadata: metadataFromDeployment(deployment, statuses),
 	}, nil

@@ -20,8 +20,7 @@ type Source struct {
 }
 
 type Version struct {
-	ID       string `json:"id"`
-	Statuses string `json:"status"`
+	ID string `json:"id"`
 }
 
 type CheckRequest struct {

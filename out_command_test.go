@@ -110,8 +110,7 @@ var _ = Describe("Status Out Command", func() {
 
 				Ω(outResponse.Version).Should(Equal(
 					resource.Version{
-						ID:       "1234",
-						Statuses: "success",
+						ID: "1234",
 					},
 				))
 			})
