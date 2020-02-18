@@ -57,7 +57,7 @@ type OutParams struct {
 	Task        *string
 	State       *string
 	Description *string
-	AutoMerge   *bool
+	AutoMerge   *bool `json:"auto_merge"`
 	Payload     *map[string]interface{}
 	PayloadPath *string `json:"payload_path"`
 
@@ -67,7 +67,6 @@ type OutParams struct {
 	RawTask        json.RawMessage `json:"task"`
 	RawEnvironment json.RawMessage `json:"environment"`
 	RawDescription json.RawMessage `json:"description"`
-	RawAutoMerge   json.RawMessage `json:"auto_merge"`
 	RawPayload     json.RawMessage `json:"payload"`
 }
 
