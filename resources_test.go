@@ -61,7 +61,8 @@ var _ = Describe("Resources", func() {
 					"state": "state-string",
 					"task": "task-string",
 					"environment": "environment-string",
-					"description": "description-string"
+					"description": "description-string",
+					"auto_merge": false
 					}
 				}`))
 			err := json.NewDecoder(r).Decode(&p)
@@ -73,6 +74,7 @@ var _ = Describe("Resources", func() {
 			Ω(*p.Params.Task).Should(Equal("task-string"))
 			Ω(*p.Params.Environment).Should(Equal("environment-string"))
 			Ω(*p.Params.Description).Should(Equal("description-string"))
+			Ω(*p.Params.AutoMerge).Should(Equal(false))
 		})
 
 		It("gets values from files", func() {
