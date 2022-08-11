@@ -105,6 +105,10 @@ func (p *OutParams) UnmarshalJSON(b []byte) (err error) {
 			p.Description = github.String(getStringOrStringFromFile(p.RawDescription))
 		}
 
+		if p.RawAutoMerge != nil {
+			p.AutoMerge = github.Bool(getBool(p.RawAutoMerge))
+		}
+
 		var payload map[string]interface{}
 		json.Unmarshal(p.RawPayload, &payload)
 
@@ -138,6 +142,19 @@ func NewInRequest() InRequest {
 
 func NewOutRequest() OutRequest {
 	return OutRequest{}
+}
+
+func getBool(field json.RawMessage) bool {
+	var rawValue interface{}
+	if err := json.Unmarshal(field, &rawValue); err == nil {
+		switch rawValue := rawValue.(type) {
+		case bool:
+			return rawValue
+		default:
+			panic("Could not read bool out of Params field")
+		}
+	}
+	return ""
 }
 
 func getStringOrStringFromFile(field json.RawMessage) string {
