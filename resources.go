@@ -154,7 +154,7 @@ func getBool(field json.RawMessage) bool {
 			panic("Could not read bool out of Params field")
 		}
 	}
-	return ""
+	return true
 }
 
 func getStringOrStringFromFile(field json.RawMessage) string {
